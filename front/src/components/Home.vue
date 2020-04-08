@@ -1,7 +1,8 @@
 <template>
   <div class="big_button">
-    <button v-on:click="counter += 1">Add 1</button>
-    <p>Le bouton ci-dessus a été cliqué {{ counter }} fois.</p>
+    Welcome <br />
+    
+    <router-link to="/mash/create" tag="button">Start a tournament</router-link>
   </div>
 </template>
 
