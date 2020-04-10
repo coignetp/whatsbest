@@ -5,7 +5,7 @@
       <router-link to="/mash/3">Mash sample</router-link> |
       <router-link to="/mash/3/result">Mash sample result</router-link>
     </div>
-    <div id="app">
+    <div id="core-view">
       <router-view></router-view>
     </div>
   </div>
@@ -23,7 +23,7 @@ export default {
 </script>
 
 <style>
-#app {
+#core-view {
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
