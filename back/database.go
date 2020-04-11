@@ -1,95 +1,138 @@
 package main
 
 import (
-	"database/sql"
-	"log"
-	"math/rand"
+  "database/sql"
+  "log"
+  "math/rand"
+  "encoding/json"
+  "strconv"
 )
 
-type Tournament struct {
-	id				int64
-	question	string
-	size			int
-	choices		[][]byte
-	elos			[]int
+type Choice struct {
+  Id            int     `json:"id"`
+  IdTournament  int     `json:"idtournament"`
+  Ctype         int     `json:"type"`
+  Bytestream    []byte  `json:"bytestream"`
+  Elo           int     `json:"elo"`
+  Totalround    int     `json:"totalround"`
 }
 
 func createTables(db *sql.DB) {
-	createTournamentSQL := `CREATE TABLE IF NOT EXISTS tournaments (
+  createTournamentSQL := `CREATE TABLE IF NOT EXISTS tournaments (
     "id" INTEGER PRIMARY KEY,
     "question" TEXT,
     "size" INTEGER
   );`
   createChoiceSQL := `CREATE TABLE IF NOT EXISTS choices (
     "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    "idTournament" INTEGER,
     "type" INTEGER,
-    "bytestream" TEXT,
-    "elo" INTEGER
+    "bytestream" BLOB,
+    "elo" INTEGER,
+    "totalround" INTEGER
   );`
   createTournamentToChoiceSQL := `CREATE TABLE IF NOT EXISTS tournamentchoice(
     "idTournament" INTEGER,
     "idChoice" INTEGER,
-		"choiceNumber" INTEGER,
-		PRIMARY KEY (idTournament, idChoice)
+    "choiceNumber" INTEGER,
+    PRIMARY KEY (idTournament, idChoice)
 	);`
-	
-	log.Println("Creating Tournaments table")
-	statement, err := db.Prepare(createTournamentSQL)
-	if err != nil {
-		log.Fatal(err.Error())
-	}
-	statement.Exec()
 
-	log.Println("Creating Choices table")
-	statement, err = db.Prepare(createChoiceSQL)
-	if err != nil {
-		log.Fatal(err.Error())
-	}
-	statement.Exec()
+  log.Println("Creating Tournaments table")
+  statement, err := db.Prepare(createTournamentSQL)
+  if err != nil {
+    log.Fatal(err.Error())
+  }
+  statement.Exec()
 
-	log.Println("Creating TournamentChoice table")
-	statement, err = db.Prepare(createTournamentToChoiceSQL)
-	if err != nil {
-		log.Fatal(err.Error())
-	}
-	statement.Exec()
+  log.Println("Creating Choices table")
+  statement, err = db.Prepare(createChoiceSQL)
+  if err != nil {
+    log.Fatal(err.Error())
+  }
+  statement.Exec()
+
+  //
+  var c3 Choice
+  err = json.Unmarshal([]byte(`{"id": 42, "idtournament": 12, "type": 1, "bytestream": [], "elo": 1000, "totalround": 0}`), &c3)
+  if err != nil {
+    log.Print(err)
+  }
+  log.Printf("%+v", c3)
+  //
+
+  log.Println("Creating TournamentChoice table")
+  statement, err = db.Prepare(createTournamentToChoiceSQL)
+  if err != nil {
+    log.Fatal(err.Error())
+  }
+  statement.Exec()
 }
 
 func addTournament(db *sql.DB, question string, size int, choices [][]byte, choicesType int) int64 {
-	var id = rand.Int63()
-	baseElo := 1000
-	// TODO: check id is available
-	// TODO: remove
-	log.Print(id)
+  var id = rand.Int63()
+  baseElo := 1000
+  baseRound := 0
+  // TODO: check id is available
+  // TODO: remove
+  log.Print(id)
 
-	if len(choices) != size {
-		return -1
-	}
+  if len(choices) != size {
+    return -1
+  }
 
-	tx, _ := db.Begin()
-	statement, _ := tx.Prepare("INSERT INTO tournaments (id, question, size) values (?,?,?)")
-	_, err := statement.Exec(id, question, size)
-	if err != nil {
-		log.Print(err.Error())
-	}
+  tx, _ := db.Begin()
+  statement, _ := tx.Prepare("INSERT INTO tournaments (id, question, size) values (?,?,?)")
+  _, err := statement.Exec(id, question, size)
+  if err != nil {
+    log.Print(err.Error())
+  }
 
-	for i := 0; i < size; i++ {
-		choiceStatement, _ := tx.Prepare("INSERT INTO choices (type, bytestream, elo) values (?,?,?)")
-		res, err := choiceStatement.Exec(choicesType, choices[i], baseElo)
-		if err != nil {
-			log.Print(err.Error())
-		}
+  for i := 0; i < size; i++ {
+    choiceStatement, _ := tx.Prepare("INSERT INTO choices (idTournament, type, bytestream, elo, totalround) values (?,?,?,?,?)")
+    res, err := choiceStatement.Exec(id, choicesType, choices[i], baseElo, baseRound)
+    if err != nil {
+      log.Print(err.Error())
+    }
 
-		choiceId, _ := res.LastInsertId()
+    choiceId, _ := res.LastInsertId()
 
-		tournamentChoiceStatement, _ := tx.Prepare("INSERT INTO tournamentchoice (idTournament, idChoice, choiceNumber) values (?,?,?);")
-		_, err = tournamentChoiceStatement.Exec(id, choiceId, i)
-		if err != nil {
-			log.Print(err.Error())
-		}
-	}
+    tournamentChoiceStatement, _ := tx.Prepare("INSERT INTO tournamentchoice (idTournament, idChoice, choiceNumber) values (?,?,?);")
+    _, err = tournamentChoiceStatement.Exec(id, choiceId, i)
+    if err != nil {
+      log.Print(err.Error())
+    }
+  }
 
-	tx.Commit()
+  tx.Commit()
 
-	return id
+  return id
+}
+
+func getTwoChoices(db *sql.DB, idTournament int64) (Choice, Choice, bool) {
+  tx, _ := db.Begin()
+  strId := strconv.FormatInt(idTournament, 10)
+  query := "SELECT * FROM choices WHERE idTournament=" + strId + " ORDER BY RANDOM() LIMIT 2;"
+
+  choices, err := db.Query(query)
+  if err != nil {
+    log.Print(err.Error())
+  }
+  tx.Commit()
+  defer choices.Close()
+
+  var c1 Choice
+  var c2 Choice
+
+  if choices.Next() == false {
+    return c1, c2, false
+  }
+  choices.Scan(&c1.Id, &c1.IdTournament, &c1.Ctype, &c1.Bytestream, &c1.Elo, &c1.Totalround)
+  if choices.Next() == false {
+    return c1, c2, false
+  }
+  choices.Scan(&c2.Id, &c2.IdTournament, &c2.Ctype, &c2.Bytestream, &c2.Elo, &c2.Totalround)
+  // log.Printf("Choice: id=%d | idt=%d | type=%d | elo=%d | tot=%d | " + string(c.bytestream), c.id, c.idTournament, c.ctype, c.elo, c.totalroud)
+
+  return c1, c2, true
 }

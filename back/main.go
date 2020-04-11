@@ -31,11 +31,8 @@ func main() {
 
   createTables(sqliteDatabase)
 
-  http.HandleFunc("/create", makeDbClientHandler(createTournament, sqliteDatabase))
-
-  http.HandleFunc("/redirect", func (w http.ResponseWriter, r *http.Request) {
-    http.Redirect(w, r, "http://localhost:8080/mash/3", 303)
-  })
+  http.HandleFunc("/create", makeDbClientHandler(createTournamentRoute, sqliteDatabase))
+  http.HandleFunc("/choice", makeDbClientHandler(choiceRoute, sqliteDatabase))
 
   log.Fatal(http.ListenAndServe(":8081", nil))
 }
