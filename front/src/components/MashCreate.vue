@@ -59,9 +59,11 @@ export default {
         };
 
         axios.post("http://localhost:8081/create", formData, config).then(response=>{
-          if (response.data.success){
+          console.log(response);
+          if (response.status == 200){
             this.image = '';
-            console.log("Image uploaded successfully ✨");
+            console.log("Tournament successfully created");
+            window.location.replace("#/mash/" + response.data);
           }
         }).catch(err=>{
           console.error(err);
