@@ -12,7 +12,7 @@ type Choice struct {
   Id            int     `json:"id"`
   IdTournament  int     `json:"idtournament"`
   Ctype         int     `json:"type"`
-  Bytestream    []byte  `json:"bytestream"`
+  Bytestream    string  `json:"bytestream"`
   Elo           int     `json:"elo"`
   Totalround    int     `json:"totalround"`
 }
@@ -44,6 +44,7 @@ func createTables(db *sql.DB) {
     log.Fatal(err.Error())
   }
   statement.Exec()
+  defer statement.Close()
 
   log.Println("Creating Choices table")
   statement, err = db.Prepare(createChoiceSQL)
@@ -51,6 +52,7 @@ func createTables(db *sql.DB) {
     log.Fatal(err.Error())
   }
   statement.Exec()
+  defer statement.Close()
 
   log.Println("Creating TournamentChoice table")
   statement, err = db.Prepare(createTournamentToChoiceSQL)
@@ -58,9 +60,10 @@ func createTables(db *sql.DB) {
     log.Fatal(err.Error())
   }
   statement.Exec()
+  defer statement.Close()
 }
 
-func addTournament(db *sql.DB, question string, size int, choices [][]byte, choicesType int) int {
+func addTournament(db *sql.DB, question string, size int, choices []string, choicesType int) int {
   var id = rand.Int31()
   baseElo := 1000
   baseRound := 0
@@ -73,18 +76,20 @@ func addTournament(db *sql.DB, question string, size int, choices [][]byte, choi
   }
 
   tx, _ := db.Begin()
-  statement, _ := tx.Prepare("INSERT INTO tournaments (id, question, size) values (?,?,?)")
+  statement, _ := tx.Prepare("INSERT INTO tournaments (id, question, size) values (?,?,?);")
   _, err := statement.Exec(id, question, size)
   if err != nil {
     log.Print(err.Error())
   }
+  defer statement.Close()
 
   for i := 0; i < size; i++ {
-    choiceStatement, _ := tx.Prepare("INSERT INTO choices (idTournament, type, bytestream, elo, totalround) values (?,?,?,?,?)")
+    choiceStatement, _ := tx.Prepare("INSERT INTO choices (idTournament, type, bytestream, elo, totalround) values (?,?,?,?,?);")
     res, err := choiceStatement.Exec(id, choicesType, choices[i], baseElo, baseRound)
     if err != nil {
       log.Print(err.Error())
     }
+    defer choiceStatement.Close()
 
     choiceId, _ := res.LastInsertId()
 
@@ -93,15 +98,18 @@ func addTournament(db *sql.DB, question string, size int, choices [][]byte, choi
     if err != nil {
       log.Print(err.Error())
     }
+    defer tournamentChoiceStatement.Close()
   }
 
-  tx.Commit()
+  err = tx.Commit()
+  if err != nil {
+    log.Print(err.Error())
+  }
 
   return int(id)
 }
 
 func getTwoChoices(db *sql.DB, idTournament int) (Choice, Choice, bool) {
-  tx, _ := db.Begin()
   strId := strconv.Itoa(idTournament)
   query := "SELECT * FROM choices WHERE idTournament=" + strId + " ORDER BY RANDOM() LIMIT 2;"
 
@@ -109,7 +117,6 @@ func getTwoChoices(db *sql.DB, idTournament int) (Choice, Choice, bool) {
   if err != nil {
     log.Print(err.Error())
   }
-  tx.Commit()
   defer choices.Close()
 
   var c1 Choice
@@ -119,17 +126,16 @@ func getTwoChoices(db *sql.DB, idTournament int) (Choice, Choice, bool) {
     return c1, c2, false
   }
   choices.Scan(&c1.Id, &c1.IdTournament, &c1.Ctype, &c1.Bytestream, &c1.Elo, &c1.Totalround)
+
   if choices.Next() == false {
     return c1, c2, false
   }
   choices.Scan(&c2.Id, &c2.IdTournament, &c2.Ctype, &c2.Bytestream, &c2.Elo, &c2.Totalround)
-  // log.Printf("Choice: id=%d | idt=%d | type=%d | elo=%d | tot=%d | " + string(c.bytestream), c.id, c.idTournament, c.ctype, c.elo, c.totalroud)
 
   return c1, c2, true
 }
 
 func getAllChoices(db *sql.DB, idTournament int) []Choice {
-  tx, _ := db.Begin()
   strId := strconv.Itoa(idTournament)
   query := "SELECT * FROM choices WHERE idTournament=" + strId + " ORDER BY elo DESC;"
 
@@ -137,9 +143,7 @@ func getAllChoices(db *sql.DB, idTournament int) []Choice {
   if err != nil {
     log.Print(err.Error())
   }
-  tx.Commit()
   defer choices.Close()
-
 
   var result []Choice
   for choices.Next() {
@@ -154,19 +158,23 @@ func getAllChoices(db *sql.DB, idTournament int) []Choice {
 func setElo(db *sql.DB, idChoice, newElo int) bool {
   tx, _ := db.Begin()
 
-  statement, _ := tx.Prepare("UPDATE choices SET elo=? WHERE id=?")
-  _, err := statement.Exec(newElo, idChoice)
+  statement, err := tx.Prepare("UPDATE choices SET elo=? WHERE id=?;")
+  if err != nil {
+    log.Print(err.Error())
+  }
+  _, err = statement.Exec(newElo, idChoice)
+  defer statement.Close()
   if err != nil {
     log.Print(err.Error())
     return false
   }
 
   tx.Commit()
+
   return true
 }
 
 func getQuestion(db *sql.DB, idTournament int) string {
-  tx, _ := db.Begin()
   strId := strconv.Itoa(idTournament)
   query := "SELECT question FROM tournaments WHERE id=" + strId + ";"
 
@@ -174,7 +182,7 @@ func getQuestion(db *sql.DB, idTournament int) string {
   if err != nil {
     log.Print(err.Error())
   }
-  tx.Commit()
+  defer tournament.Close()
 
   if tournament.Next() {
     var question string

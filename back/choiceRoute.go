@@ -13,9 +13,10 @@ import (
 )
 
 type ResponseChoice struct {
-  C1	    Choice  `json:"c1"`
-  C2      Choice  `json:"c2"`
-  Winner  int     `json:"winner"`
+  C1	      Choice  `json:"c1"`
+  C2        Choice  `json:"c2"`
+  Winner    int     `json:"winner"`
+  Question  string  `json:"question"`
 }
 
 func choiceRoute(w http.ResponseWriter, r *http.Request, db *sql.DB) {
@@ -29,6 +30,7 @@ func choiceRoute(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 
 func NewResponseChoice(db *sql.DB, idTournament int) *ResponseChoice {
   c1, c2, found := getTwoChoices(db, idTournament)
+  question := getQuestion(db, idTournament)
 
   if found == false {
     log.Printf("Tournament not found: %d", idTournament)
@@ -39,6 +41,7 @@ func NewResponseChoice(db *sql.DB, idTournament int) *ResponseChoice {
     C1: c1,
     C2: c2,
     Winner: 0,
+    Question: question,
   }
   log.Printf("Selected %d and %d (%d %d)", c1.Id, c2.Id, c1.IdTournament, c2.IdTournament)
 
@@ -70,8 +73,6 @@ func validateChoice(w http.ResponseWriter, r *http.Request, db *sql.DB) {
   decoder := json.NewDecoder(r.Body)
   var resultChoices ResponseChoice
   err := decoder.Decode(&resultChoices)
-
-  log.Print("Validate choice")
 
   if err != nil {
     log.Print(err.Error())

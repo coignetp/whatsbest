@@ -25,17 +25,28 @@
 import PictureInput from 'vue-picture-input'
 import axios from 'axios';
 
+const toBase64 = file => new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = error => reject(error);
+});
+
 export default {
   name: 'MashCreate',
   components: {
     PictureInput
   },
+  data() {
+    return {
+      images: []
+    }
+  },
   methods: {
     onChange () {
-      console.log('New picture selected!')
       if (this.$refs.pictureInput.image) {
         console.log('Picture loaded.')
-        this.image = [
+        this.images = [
           this.$refs.pictureInput.file,
           this.$refs.pictureInput.file,
         ];
@@ -44,26 +55,33 @@ export default {
       }
     },
 
-    startTournament() {
+    async startTournament() {
       console.log("In start Tournament");
-      if (this.image) {
-        const formData = new FormData();
-        formData.append("question", "What's best?");
-        formData.append("size", 2);
-        formData.append("image0", this.image[0]);
-        formData.append("image1", this.image[1]);
+      if (this.images) {
+        let tournament = {
+          "question": "What's best?",
+          "size": this.images.length,
+          "type": 1,
+          "choices": [],
+        }
+
+        let img;
+        for (img of this.images) {
+          tournament["choices"].push(await toBase64(img));
+        }
+
         const config = {
           headers: {
-            'content-type': 'multipart/form-data'
+            'content-type': 'application/json'
           }
         };
 
-        axios.post("http://localhost:8081/create", formData, config).then(response=>{
-          console.log(response);
+        axios.post("http://localhost:8081/create", tournament, config).then(response=>{
+          console.log(response.data);
           if (response.status == 200){
             this.image = '';
             console.log("Tournament successfully created");
-            window.location.replace("#/mash/" + response.data);
+            window.location.replace("#/mash/" + response.data["id"]);
           }
         }).catch(err=>{
           console.error(err);

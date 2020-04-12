@@ -9,6 +9,7 @@ func enableCors(w *http.ResponseWriter) {
   // TODO: restrict
 	(*w).Header().Set("Access-Control-Allow-Origin", "*")
   (*w).Header().Set("Access-Control-Allow-Headers", "*")
+  (*w).Header().Set("Access-Control-Allow-Method", "POST,GET")
 }
 
 
