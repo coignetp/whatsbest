@@ -33,6 +33,7 @@ func main() {
 
   http.HandleFunc("/create", makeDbClientHandler(createTournamentRoute, sqliteDatabase))
   http.HandleFunc("/choice", makeDbClientHandler(choiceRoute, sqliteDatabase))
+  http.HandleFunc("/result", makeDbClientHandler(resultRoute, sqliteDatabase))
 
   log.Fatal(http.ListenAndServe(":8081", nil))
 }

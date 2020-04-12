@@ -68,7 +68,7 @@ export default {
       } else {
         document.getElementById("ChoiceLeft").src = "https://giphy.com/gifs/chillin-n9j743yPQ5pg4"
       }
-  }).catch(err=>{
+    }).catch(err=>{
       console.error(err);
     });
   }

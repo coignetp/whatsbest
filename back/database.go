@@ -128,6 +128,29 @@ func getTwoChoices(db *sql.DB, idTournament int) (Choice, Choice, bool) {
   return c1, c2, true
 }
 
+func getAllChoices(db *sql.DB, idTournament int) []Choice {
+  tx, _ := db.Begin()
+  strId := strconv.Itoa(idTournament)
+  query := "SELECT * FROM choices WHERE idTournament=" + strId + " ORDER BY elo DESC;"
+
+  choices, err := db.Query(query)
+  if err != nil {
+    log.Print(err.Error())
+  }
+  tx.Commit()
+  defer choices.Close()
+
+
+  var result []Choice
+  for choices.Next() {
+    var c Choice
+    choices.Scan(&c.Id, &c.IdTournament, &c.Ctype, &c.Bytestream, &c.Elo, &c.Totalround)
+    result = append(result, c)
+  }
+
+  return result
+}
+
 func setElo(db *sql.DB, idChoice, newElo int) bool {
   tx, _ := db.Begin()
 
@@ -140,4 +163,25 @@ func setElo(db *sql.DB, idChoice, newElo int) bool {
 
   tx.Commit()
   return true
+}
+
+func getQuestion(db *sql.DB, idTournament int) string {
+  tx, _ := db.Begin()
+  strId := strconv.Itoa(idTournament)
+  query := "SELECT question FROM tournaments WHERE id=" + strId + ";"
+
+  tournament, err := db.Query(query)
+  if err != nil {
+    log.Print(err.Error())
+  }
+  tx.Commit()
+
+  if tournament.Next() {
+    var question string
+    tournament.Scan(&question)
+
+    return question
+  }
+
+  return "Unknown"
 }

@@ -46,8 +46,6 @@ func NewResponseChoice(db *sql.DB, idTournament int) *ResponseChoice {
 }
 
 func createChoice(w http.ResponseWriter, r *http.Request, db *sql.DB) {
-  log.Print("In create choice")
-
   idTournament64, _ := strconv.ParseInt(r.URL.Query().Get("id"), 16, 32)
   idTournament := int(idTournament64)
   log.Print(idTournament)
