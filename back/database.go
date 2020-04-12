@@ -127,3 +127,17 @@ func getTwoChoices(db *sql.DB, idTournament int) (Choice, Choice, bool) {
 
   return c1, c2, true
 }
+
+func setElo(db *sql.DB, idChoice, newElo int) bool {
+  tx, _ := db.Begin()
+
+  statement, _ := tx.Prepare("UPDATE choices SET elo=? WHERE id=?")
+  _, err := statement.Exec(newElo, idChoice)
+  if err != nil {
+    log.Print(err.Error())
+    return false
+  }
+
+  tx.Commit()
+  return true
+}

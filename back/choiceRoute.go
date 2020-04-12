@@ -84,7 +84,7 @@ func validateChoice(w http.ResponseWriter, r *http.Request, db *sql.DB) {
   }
 
   // TODO: Update local elo from DB before this update
-  updateElo(&resultChoices)
+  updateElo(db, &resultChoices)
 
   log.Printf("New elos: %d | %d", resultChoices.C1.Elo, resultChoices.C2.Elo)
   idTournament := resultChoices.C1.IdTournament
