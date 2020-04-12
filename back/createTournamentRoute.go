@@ -44,7 +44,7 @@ func createTournamentRoute(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 
     id := addTournament(db, question, numberOfChoices, choices, 1)
 
-    fmt.Fprint(w, strconv.FormatInt(id, 16))
+    fmt.Fprint(w, strconv.FormatInt(int64(id), 16))
   }
 }
 

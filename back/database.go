@@ -4,7 +4,7 @@ import (
   "database/sql"
   "log"
   "math/rand"
-  "encoding/json"
+  _ "encoding/json"
   "strconv"
 )
 
@@ -52,15 +52,6 @@ func createTables(db *sql.DB) {
   }
   statement.Exec()
 
-  //
-  var c3 Choice
-  err = json.Unmarshal([]byte(`{"id": 42, "idtournament": 12, "type": 1, "bytestream": [], "elo": 1000, "totalround": 0}`), &c3)
-  if err != nil {
-    log.Print(err)
-  }
-  log.Printf("%+v", c3)
-  //
-
   log.Println("Creating TournamentChoice table")
   statement, err = db.Prepare(createTournamentToChoiceSQL)
   if err != nil {
@@ -69,8 +60,8 @@ func createTables(db *sql.DB) {
   statement.Exec()
 }
 
-func addTournament(db *sql.DB, question string, size int, choices [][]byte, choicesType int) int64 {
-  var id = rand.Int63()
+func addTournament(db *sql.DB, question string, size int, choices [][]byte, choicesType int) int {
+  var id = rand.Int31()
   baseElo := 1000
   baseRound := 0
   // TODO: check id is available
@@ -106,12 +97,12 @@ func addTournament(db *sql.DB, question string, size int, choices [][]byte, choi
 
   tx.Commit()
 
-  return id
+  return int(id)
 }
 
-func getTwoChoices(db *sql.DB, idTournament int64) (Choice, Choice, bool) {
+func getTwoChoices(db *sql.DB, idTournament int) (Choice, Choice, bool) {
   tx, _ := db.Begin()
-  strId := strconv.FormatInt(idTournament, 10)
+  strId := strconv.Itoa(idTournament)
   query := "SELECT * FROM choices WHERE idTournament=" + strId + " ORDER BY RANDOM() LIMIT 2;"
 
   choices, err := db.Query(query)

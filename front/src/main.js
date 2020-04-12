@@ -1,5 +1,6 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router';
+import { BootstrapVue, IconsPlugin } from 'bootstrap-vue'
 
 import App from './App.vue'
 import Home from './components/Home.vue'
@@ -9,6 +10,8 @@ import MashResult from './components/MashResult.vue'
 
 Vue.config.productionTip = false;
 Vue.use(VueRouter);
+Vue.use(BootstrapVue);
+Vue.use(IconsPlugin);
 
 // const NotFound = { template: '<p>Page not found</p>' }
 
