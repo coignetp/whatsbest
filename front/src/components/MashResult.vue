@@ -24,15 +24,15 @@ export default {
       choices: [],
     }
   },
-  beforeCreate() {
-    axios.get("http://localhost:8081/result", {params: {id: this.$route.params.id}}).then(response=>{
-      console.log(response.data);
-      this.question = response.data["question"];
-      this.choices = response.data["result"];
-      console.log(this.choices);
-    }).catch(err=>{
-      console.error(err);
-    });
+  async created() {
+    try {
+      const res = await axios.get("http://localhost:8081/result", {params: {id: this.$route.params.id}})
+      console.log(res.data);
+      this.question = res.data["question"];
+      this.choices = res.data["result"];
+    } catch(e) {
+      console.error(e);
+    }
   }
 }
 </script>

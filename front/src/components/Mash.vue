@@ -37,19 +37,9 @@ export default {
     displayNewChoice(data) {
       console.log(data);
       this.choices = data;
-      // if (data["c1"]["type"] === 1) {
-      //   document.getElementById("ChoiceLeft").src = data["c1"]["bytestream"];
-      // } else {
-      //   document.getElementById("ChoiceLeft").src = "https://giphy.com/gifs/90s-cartoon-cartoons-Ala8Pjo4RN9kY"
-      // }
-      // if (data["c2"]["type"] === 1) {
-      //   document.getElementById("ChoiceRight").src = data["c2"]["bytestream"];
-      // } else {
-      //   document.getElementById("ChoiceLeft").src = "https://giphy.com/gifs/chillin-n9j743yPQ5pg4"
-      // }
     },
 
-    chooseWinner(i) {
+    async chooseWinner(i) {
       this.choices["winner"] = i;
 
       const config = {
@@ -64,19 +54,21 @@ export default {
       this.choices["c2"]["bytestream"] = "";
       this.choices["c2"]["idtournament"] = parseInt(this.$route.params.id, 16);
 
-      axios.post("http://localhost:8081/choice", this.choices, config).then(response=>{
-        this.displayNewChoice(response.data);
-      }).catch(err=>{
-        console.error(err);
-      });
+      try {
+        const res = await axios.post("http://localhost:8081/choice", this.choices, config)
+        this.displayNewChoice(res.data);
+      } catch(e) {
+        console.error(e);
+      }
     }
   },
-  beforeMount() {
-    axios.get("http://localhost:8081/choice", {params: {id: this.$route.params.id}}).then(response=>{
-      this.displayNewChoice(response.data);
-    }).catch(err=>{
-      console.error(err);
-    });
+  async created() {
+    try {
+      const res = await axios.get("http://localhost:8081/choice", {params: {id: this.$route.params.id}})
+      this.displayNewChoice(res.data);
+    } catch(e) {
+      console.error(e);
+    }
   }
 }
 </script>

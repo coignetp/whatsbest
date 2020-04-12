@@ -76,16 +76,18 @@ export default {
           }
         };
 
-        axios.post("http://localhost:8081/create", tournament, config).then(response=>{
-          console.log(response.data);
-          if (response.status == 200){
+        try {
+          const res = await axios.post("http://localhost:8081/create", tournament, config);
+          if (res.status == 200) {
             this.image = '';
-            console.log("Tournament successfully created");
-            window.location.replace("#/mash/" + response.data["id"]);
+              console.log("Tournament successfully created");
+              window.location.replace("#/mash/" + res.data["id"]);
+          } else {
+            console.error(res);
           }
-        }).catch(err=>{
-          console.error(err);
-        });
+        } catch (e) {
+          console.error(e);
+        }
       }
     }
   }
