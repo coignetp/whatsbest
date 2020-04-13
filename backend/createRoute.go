@@ -6,6 +6,7 @@ import (
   "log"
   "net/http"
   "strconv"
+  "strings"
 )
 
 type RequestTournament struct {
@@ -27,12 +28,38 @@ func createTournamentRoute(w http.ResponseWriter, r *http.Request, db *sql.DB) {
       log.Print(err.Error())
     }
 
-    log.Println("Question: " + requestTournament.Question) 
+    log.Println("Question: " + requestTournament.Question)
+    var id int
 
-    id := addTournament(db, requestTournament.Question, requestTournament.Size, requestTournament.Choices, requestTournament.Type)
+    if requestTournament.Type == 1 {
+      var resizedChoices []string
 
+      for i := 0; i < requestTournament.Size; i++ {
+        resizedChoices = append(resizedChoices, checkAndResizeImage(requestTournament.Choices[i]))
+      }
+      id = addTournament(db, requestTournament.Question, requestTournament.Size, resizedChoices, requestTournament.Type)
+    }
     w.Header().Set("Content-Type", "application/json")
     w.WriteHeader(http.StatusOK)
     w.Write([]byte("{\"id\": \"" + strconv.FormatInt(int64(id), 16) + "\"}"))
   }
+}
+
+
+func checkAndResizeImage(b64 string) string {
+  splitted := strings.SplitN(b64, ",", 2)
+
+  // Wrong format
+  if len(splitted) != 2 {
+    log.Print("Wrong formatted file")
+    return ""
+  }
+
+  if (strings.Contains(splitted[0], "image/jpg") || strings.Contains(splitted[0], "image/jpeg") || strings.Contains(splitted[0], "image/png") || strings.Contains(splitted[0], "image/gif")) {
+    // TODO: resize
+
+    return b64
+  }
+
+  return ""
 }
