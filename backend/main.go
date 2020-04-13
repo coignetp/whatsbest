@@ -16,12 +16,16 @@ func main() {
   rand.Seed(time.Now().UTC().UnixNano())
   
   // Clear database
-  os.Remove("tournament.db")
-  file, err := os.Create("tournament.db")
-  if err != nil {
-    log.Fatal(err.Error())
+  // os.Remove("tournament.db")
+  _, err := os.Stat("tournament.db")
+
+  if os.IsNotExist(err) {
+    file, err := os.Create("tournament.db")
+    if err != nil {
+      log.Fatal(err.Error())
+    }
+    file.Close()
   }
-  file.Close()
 
   sqliteDatabase, err := sql.Open("sqlite3", "./tournament.db")
   if err != nil {

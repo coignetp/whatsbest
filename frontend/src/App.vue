@@ -1,9 +1,7 @@
 <template>
   <div class="app">
     <div class="nav">
-      <router-link to="/">Home</router-link> |
-      <router-link to="/mash/3">Mash sample</router-link> |
-      <router-link to="/mash/3/result">Mash sample result</router-link>
+      <router-link to="/">Home</router-link>
     </div>
     <div id="core-view">
       <router-view></router-view>
