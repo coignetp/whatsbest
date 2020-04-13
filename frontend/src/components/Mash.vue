@@ -4,17 +4,22 @@
     <router-link :to="'/mash/' + $route.params.id + '/result'">Result</router-link>
     <hr />
     {{ choices["question"] }}
-    <div class="choice left">
-      <b-img left id="ChoiceLeft" v-on:click="chooseWinner(0)" :src="choices['c1']['bytestream']"></b-img>
-    </div>
-    <div class="choice right">
-      <b-img right id="ChoiceRight" v-on:click="chooseWinner(1)" :src="choices['c2']['bytestream']"></b-img>
+    <div class="row justify-content-md-center">
+      <div class="col col-md-3">
+        <b-img thumbnail v-on:click="chooseWinner(0)" :src="choices['c1']['bytestream']"></b-img>
+      </div>
+      <div class="col-md-auto">VS</div>
+      <div class="col col-md-3">
+        <b-img thumbnail v-on:click="chooseWinner(1)" :src="choices['c2']['bytestream']"></b-img>
+      </div>
     </div>
   </div>
 </template>
 
 <script>
 import axios from 'axios';
+import 'bootstrap/dist/css/bootstrap.css'
+import 'bootstrap-vue/dist/bootstrap-vue.css'
 
 
 export default {

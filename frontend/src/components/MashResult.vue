@@ -5,9 +5,11 @@
     <hr />
     <div class="results">
       {{ question }} <br />
-      <div class="choice_res" v-for="(choice, rank) in choices" :key="rank">
-        {{ rank + 1 }}: {{ choice["elo"] }} <br />
-        <b-img :src="choice['bytestream']"></b-img>
+      <div class="row" v-for="(choice, rank) in choices" :key="rank">
+        <div class="col-md-4 offset-md-4">
+          {{ rank + 1 }}: {{ choice["elo"] }} <br />
+          <b-img thumbnail :src="choice['bytestream']"></b-img>
+        </div>
       </div>
     </div>
   </div>
@@ -15,6 +17,8 @@
 
 <script>
 import axios from 'axios';
+import 'bootstrap/dist/css/bootstrap.css'
+import 'bootstrap-vue/dist/bootstrap-vue.css'
 
 export default {
   name: 'MashResult',
