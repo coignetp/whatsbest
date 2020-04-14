@@ -1,34 +1,18 @@
 <template>
   <div class="big_button">
     Welcome <br />
-    
-    <router-link to="/mash/create" tag="button">Start a tournament</router-link>
+    <b-button variant="outline-primary" to="/mash/create">Start a tournament</b-button>
   </div>
 </template>
 
 <script>
+import 'bootstrap/dist/css/bootstrap.css'
+import 'bootstrap-vue/dist/bootstrap-vue.css'
+
 export default {
   name: 'Home',
   props: {
     counter: String
   }
 }
-</script>
 
-<!-- Add "scoped" attribute to limit CSS to this component only -->
-<style scoped>
-h3 {
-  margin: 40px 0 0;
-}
-ul {
-  list-style-type: none;
-  padding: 0;
-}
-li {
-  display: inline-block;
-  margin: 0 10px;
-}
-a {
-  color: #42b983;
-}
-</style>

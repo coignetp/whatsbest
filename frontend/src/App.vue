@@ -1,7 +1,7 @@
 <template>
   <div class="app">
     <div class="nav">
-      <router-link to="/">Home</router-link>
+      <router-link icon class="h3 mb-2" to="/"><b-icon icon="house-door-fill"></b-icon></router-link>
     </div>
     <div id="core-view">
       <router-view></router-view>
@@ -10,12 +10,12 @@
 </template>
 
 <script>
-// import Home from './components/Home.vue'
+import 'bootstrap/dist/css/bootstrap.css'
+import 'bootstrap-vue/dist/bootstrap-vue.css'
 
 export default {
   name: 'App',
   components: {
-    // Home
   }
 }
 </script>

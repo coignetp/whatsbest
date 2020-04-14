@@ -1,6 +1,6 @@
 <template>
   <div class="mash-create">
-    <button @click="startTournament">Let's start!</button>
+    <b-button variant="outline-primary" @click="startTournament">Let's start!</b-button>
     <hr />
     <div class="mash-create-choices">
       <b-container fluid>
@@ -62,7 +62,7 @@ export default {
         dictDefaultMessage: 'Drop images here to upload',
         resizeWidth: 200,
         resizeHeight: 300,
-        maxFilesize: 0.5,
+        maxFilesize: 2,
         addRemoveLinks: true,
       }
     }

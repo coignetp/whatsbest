@@ -3,6 +3,9 @@
     Mashing n°{{ $route.params.id }} <br />
     <router-link :to="'/mash/' + $route.params.id + '/result'">Result</router-link>
     <hr />
+    <b-container v-if="lastOpinion.length > 0" fluid>
+      <b-row class="my-1 justify-content-center">{{ lastOpinion }}</b-row>
+    </b-container>
     {{ choices["question"] }}
     <div class="row justify-content-md-center">
       <div class="col col-md-3 align-middle">
@@ -36,6 +39,7 @@ export default {
   name: 'Mash',
   data() {
     return {
+      lastOpinion: "",
       choices: {
         "c1": {
           "type": 1,
@@ -45,13 +49,21 @@ export default {
           "type": 1,
           "bytestream": ""
         }
-      }
+      },
+      opinions: [
+        "Wise choice",
+        "Meh..",
+        "Did you read the question?",
+        "Why not",
+      ],
     }
   },
   methods: {
     displayNewChoice(data) {
       console.log(data);
       this.choices = data;
+      this.lastOpinion = this.opinions[Math.floor(Math.random() * this.opinions.length)]; 
+      console.log(this.lastOpinion);
     },
 
     async chooseWinner(i) {
@@ -80,7 +92,8 @@ export default {
   async created() {
     try {
       const res = await axios.get("http://localhost:8081/choice", {params: {id: this.$route.params.id}})
-      this.displayNewChoice(res.data);
+      console.log(res.data);
+      this.choices = res.data;
     } catch(e) {
       console.error(e);
     }
