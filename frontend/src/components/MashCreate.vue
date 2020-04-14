@@ -91,7 +91,9 @@ export default {
       return false;
     },
     async createTournamentRequest() {
-      const tchoices = this.textchoices.split("\n");
+      const tchoices = this.textchoices.split("\n").filter(function(el) {
+        return el.length > 0;
+      });
       if (this.question.length == 0 || this.images.length + tchoices.length < 2) {
         return null;
       }

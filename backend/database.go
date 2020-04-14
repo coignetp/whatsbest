@@ -84,7 +84,6 @@ func addTournament(db *sql.DB, question string, size int, choices []string, choi
   defer statement.Close()
 
   for i := 0; i < size; i++ {
-    log.Print("Inserting")
     choiceStatement, _ := tx.Prepare("INSERT INTO choices (idTournament, type, bytestream, elo, totalround) values (?,?,?,?,?);")
     res, err := choiceStatement.Exec(id, choicesType[i], choices[i], baseElo, baseRound)
     if err != nil {
@@ -154,6 +153,25 @@ func getAllChoices(db *sql.DB, idTournament int) []Choice {
   }
 
   return result
+}
+
+func mostRecentElo(db *sql.DB, idChoice int) int {
+  query := "SELECT elo FROM choices WHERE id=?;"
+
+  c, err := db.Query(query, idChoice)
+  if err != nil {
+    log.Print(err)
+    return -1
+  }
+  defer c.Close()
+  if !c.Next() {
+    return -1
+  }
+  
+  var updatedElo int
+  c.Scan(&updatedElo)
+
+  return updatedElo
 }
 
 func setElo(db *sql.DB, idChoice, newElo int) bool {

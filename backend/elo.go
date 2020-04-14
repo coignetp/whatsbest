@@ -13,6 +13,13 @@ func expectedScore(elo1 int, elo2 int) float64 {
 
 func updateElo(db *sql.DB, choices *ResponseChoice) {
   k := 32.0
+  choices.C1.Elo = mostRecentElo(db, choices.C1.Id)
+  choices.C2.Elo = mostRecentElo(db, choices.C2.Id)
+
+  if (choices.C1.Elo == -1 || choices.C2.Elo == -1) {
+    return
+  }
+
   gap := int(math.Round(k * (1.0 - float64(choices.Winner) - expectedScore(choices.C1.Elo, choices.C2.Elo))))
   choices.C1.Elo += gap
   choices.C2.Elo -= gap

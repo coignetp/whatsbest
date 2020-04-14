@@ -51,12 +51,10 @@ func createTournamentRoute(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 
 
 func checkAndProcessChoice(b64 string) (string, int, bool) {
-  if !strings.HasPrefix(b64, "data:image/") {
+  if (b64 == "" || !strings.HasPrefix(b64, "data:image/")) {
     // Raw choice
     return b64, 0, false
   }
-  log.Printf("%+v is", b64)
-  
   splitted := strings.SplitN(b64, ",", 2)
 
   // Wrong format
