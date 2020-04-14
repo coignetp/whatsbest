@@ -5,15 +5,17 @@
     <hr />
     <div class="results">
       {{ question }} <br />
-      <div class="row" v-for="(choice, rank) in choices" :key="rank">
-        <div class="col-md-4 offset-md-4">
-          {{ rank + 1 }}: {{ choice["elo"] }} <br />
-          <b-button v-if="choice['type'] == 1" :pressed="true" variant="outline-primary">
-            <b-img thumbnail :src="choice['bytestream']"></b-img>
-          </b-button>
-          <b-button v-else :pressed="true" variant="outline-primary">{{ choice['bytestream'] }}</b-button>
+      <transition-group appear name="res-fade">
+        <div class="row" v-for="(choice, rank) in choices" :key="rank">
+          <div class="col-md-4 offset-md-4">
+            {{ rank + 1 }}: {{ choice["elo"] }} <br />
+            <b-button v-if="choice['type'] == 1" :pressed="true" variant="outline-primary">
+              <b-img thumbnail :src="choice['bytestream']"></b-img>
+            </b-button>
+            <b-button v-else :pressed="true" variant="outline-primary">{{ choice['bytestream'] }}</b-button>
+          </div>
         </div>
-      </div>
+      </transition-group>
     </div>
   </div>
 </template>
@@ -22,6 +24,8 @@
 import axios from 'axios';
 import 'bootstrap/dist/css/bootstrap.css'
 import 'bootstrap-vue/dist/bootstrap-vue.css'
+
+import './../style.css';
 
 export default {
   name: 'MashResult',

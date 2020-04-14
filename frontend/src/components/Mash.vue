@@ -3,27 +3,33 @@
     Mashing n°{{ $route.params.id }} <br />
     <router-link :to="'/mash/' + $route.params.id + '/result'">Result</router-link>
     <hr />
-    <b-container v-if="lastOpinion.length > 0" fluid>
-      <b-row class="my-1 justify-content-center">{{ lastOpinion }}</b-row>
-    </b-container>
+    <transition name="slide-left">
+      <b-container ref="questionContainer" v-if="lastOpinion.length > 0" fluid>
+        <b-row class="my-1 justify-content-center">{{ lastOpinion }}</b-row>
+      </b-container>
+    </transition>
     {{ choices["question"] }}
     <div class="row justify-content-md-center">
       <div class="col col-md-3 align-middle">
-        <b-button  v-if="choices['c1']['type'] == 1" variant="outline-primary" v-on:click="chooseWinner(0)">
-          <b-img thumbnail :src="choices['c1']['bytestream']"></b-img>
-        </b-button>
-        <b-button v-else variant="outline-primary" v-on:click="chooseWinner(0)" >
-          {{ choices['c1']['bytestream'] }}
-        </b-button>
+        <transition v-on:appear="choiceLoaded" name="slide-left">
+          <b-button  v-if="choices['c1']['type'] == 1" variant="outline-primary" v-on:click="chooseWinner(0)">
+            <b-img thumbnail :src="choices['c1']['bytestream']"></b-img>
+          </b-button>
+          <b-button v-else variant="outline-primary" v-on:click="chooseWinner(0)" >
+            {{ choices['c1']['bytestream'] }}
+          </b-button>
+        </transition>
       </div>
       <div class="col-md-auto">VS</div>
       <div class="col col-md-3 align-middle">
-        <b-button  v-if="choices['c2']['type'] == 1" variant="outline-primary" v-on:click="chooseWinner(1)">
-          <b-img thumbnail :src="choices['c2']['bytestream']"></b-img>
-        </b-button>
-        <b-button v-else variant="outline-primary" v-on:click="chooseWinner(1)" >
-          {{ choices['c2']['bytestream'] }}
-        </b-button>
+        <transition v-on:appear="choiceLoaded" name="slide-right">
+          <b-button  v-if="choices['c2']['type'] == 1" variant="outline-primary" v-on:click="chooseWinner(1)">
+            <b-img thumbnail :src="choices['c2']['bytestream']"></b-img>
+          </b-button>
+          <b-button v-else variant="outline-primary" v-on:click="chooseWinner(1)" >
+            {{ choices['c2']['bytestream'] }}
+          </b-button>
+        </transition>
       </div>
     </div>
   </div>
@@ -31,8 +37,10 @@
 
 <script>
 import axios from 'axios';
-import 'bootstrap/dist/css/bootstrap.css'
-import 'bootstrap-vue/dist/bootstrap-vue.css'
+import 'bootstrap/dist/css/bootstrap.css';
+import 'bootstrap-vue/dist/bootstrap-vue.css';
+
+import './../style.css';
 
 
 export default {
@@ -40,6 +48,7 @@ export default {
   data() {
     return {
       lastOpinion: "",
+      choiceLoaded: false,
       choices: {
         "c1": {
           "type": 1,
@@ -62,8 +71,8 @@ export default {
     displayNewChoice(data) {
       console.log(data);
       this.choices = data;
-      this.lastOpinion = this.opinions[Math.floor(Math.random() * this.opinions.length)]; 
-      console.log(this.lastOpinion);
+      this.lastOpinion = this.opinions[Math.floor(Math.random() * this.opinions.length)];
+      this.choiceLoaded = true; 
     },
 
     async chooseWinner(i) {
@@ -94,6 +103,7 @@ export default {
       const res = await axios.get("http://localhost:8081/choice", {params: {id: this.$route.params.id}})
       console.log(res.data);
       this.choices = res.data;
+      this.choiceLoaded = true;
     } catch(e) {
       console.error(e);
     }
