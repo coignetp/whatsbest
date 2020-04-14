@@ -41,9 +41,11 @@ Choice 2"
 
 <script>
 import vue2Dropzone from "vue2-dropzone";
-import 'vue2-dropzone/dist/vue2Dropzone.min.css'
-import 'bootstrap/dist/css/bootstrap.css'
-import 'bootstrap-vue/dist/bootstrap-vue.css'
+import 'vue2-dropzone/dist/vue2Dropzone.min.css';
+import 'bootstrap/dist/css/bootstrap.css';
+import 'bootstrap-vue/dist/bootstrap-vue.css';
+
+import './../style.css';
 
 import axios from 'axios';
 
@@ -156,18 +158,3 @@ export default {
 }
 
 </script>
-
-<style scoped>
-#mash-create {
-  font-family: 'Avenir', Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: crimson;
-  margin-top: 60px;
-}
-
-h1, h2 {
-  font-weight: normal;
-}
-</style>
