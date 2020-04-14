@@ -5,7 +5,7 @@
     <hr />
     <div class="results">
       {{ question }} <br />
-      <transition-group appear name="res-fade">
+      <transition-group appear name="slide-right">
         <div class="row" v-for="(choice, rank) in choices" :key="rank">
           <div class="col-md-4 offset-md-4">
             {{ rank + 1 }}: {{ choice["elo"] }} <br />

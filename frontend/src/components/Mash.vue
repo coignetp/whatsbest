@@ -10,27 +10,27 @@
     </transition>
     {{ choices["question"] }}
     <div class="row justify-content-md-center">
-      <div class="col col-md-3 align-middle">
-        <transition v-on:appear="choiceLoaded" name="slide-left">
+      <transition appear name="slide-left">
+        <div v-if="choiceLoaded" class="col col-md-3 align-middle">
           <b-button  v-if="choices['c1']['type'] == 1" variant="outline-primary" v-on:click="chooseWinner(0)">
             <b-img thumbnail :src="choices['c1']['bytestream']"></b-img>
           </b-button>
           <b-button v-else variant="outline-primary" v-on:click="chooseWinner(0)" >
             {{ choices['c1']['bytestream'] }}
           </b-button>
-        </transition>
-      </div>
+        </div>
+      </transition>
       <div class="col-md-auto">VS</div>
-      <div class="col col-md-3 align-middle">
-        <transition v-on:appear="choiceLoaded" name="slide-right">
+      <transition appear name="slide-right">
+        <div v-if="choiceLoaded" class="col col-md-3 align-middle">
           <b-button  v-if="choices['c2']['type'] == 1" variant="outline-primary" v-on:click="chooseWinner(1)">
             <b-img thumbnail :src="choices['c2']['bytestream']"></b-img>
           </b-button>
           <b-button v-else variant="outline-primary" v-on:click="chooseWinner(1)" >
             {{ choices['c2']['bytestream'] }}
           </b-button>
-        </transition>
-      </div>
+        </div>
+      </transition>
     </div>
   </div>
 </template>
@@ -76,6 +76,7 @@ export default {
     },
 
     async chooseWinner(i) {
+      this.choiceLoaded = false;
       this.choices["winner"] = i;
 
       const config = {

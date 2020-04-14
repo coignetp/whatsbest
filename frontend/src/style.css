@@ -1,10 +1,10 @@
 .slide-left-enter {
   opacity: 0;
-  transform: translateX(-40%);
+  transform: translateX(-10%);
 }
 .slide-left-leave-to {
   opacity: 1;
-  transform: translateX(40%);
+  transform: translateX(-10%);
 }
 .slide-left-enter-active, .slide-left-leave-active {
   transition: all 300ms ease-in;
@@ -12,11 +12,11 @@
 
 .slide-right-enter {
   opacity: 0;
-  transform: translateX(40%);
+  transform: translateX(10%);
 }
 .slide-right-leave-to {
   opacity: 1;
-  transform: translateX(-40%);
+  transform: translateX(10%);
 }
 .slide-right-enter-active, .slide-right-leave-active {
   transition: all 300ms ease-in;
