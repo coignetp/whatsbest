@@ -13,7 +13,7 @@
           </b-col>
         </b-row>
         <br/>
-        <label>Choices</label>
+        <label>Possible choices</label>
         <b-tabs>
           <b-tab title="Images" active>
             <vue-dropzone ref="dropzone" id="dropzone" :options="dropzoneOptions"></vue-dropzone>

@@ -1,37 +1,42 @@
 <template>
   <div class="mash">
-    Mashing n°{{ $route.params.id }} <br />
-    <router-link :to="'/mash/' + $route.params.id + '/result'">Result</router-link>
+    <b-button variant="outline-primary" :to="'/mash/' + $route.params.id + '/result'">Current ranking</b-button>
     <hr />
     <transition name="slide-left">
       <b-container ref="questionContainer" v-if="lastOpinion.length > 0" fluid>
-        <b-row class="my-1 justify-content-center">{{ lastOpinion }}</b-row>
+        <b-row align-v="center" align-h="center">{{ lastOpinion }}</b-row>
       </b-container>
     </transition>
+    <hr v-if="lastOpinion.length > 0" />
     {{ choices["question"] }}
-    <div class="row justify-content-md-center">
-      <transition appear name="slide-left">
-        <div v-if="choiceLoaded" class="col col-md-3 align-middle">
-          <b-button  v-if="choices['c1']['type'] == 1" variant="outline-primary" v-on:click="chooseWinner(0)">
-            <b-img thumbnail :src="choices['c1']['bytestream']"></b-img>
-          </b-button>
-          <b-button v-else variant="outline-primary" v-on:click="chooseWinner(0)" >
-            {{ choices['c1']['bytestream'] }}
-          </b-button>
-        </div>
-      </transition>
-      <div class="col-md-auto">VS</div>
-      <transition appear name="slide-right">
-        <div v-if="choiceLoaded" class="col col-md-3 align-middle">
-          <b-button  v-if="choices['c2']['type'] == 1" variant="outline-primary" v-on:click="chooseWinner(1)">
-            <b-img thumbnail :src="choices['c2']['bytestream']"></b-img>
-          </b-button>
-          <b-button v-else variant="outline-primary" v-on:click="chooseWinner(1)" >
-            {{ choices['c2']['bytestream'] }}
-          </b-button>
-        </div>
-      </transition>
-    </div>
+    <hr/>
+    <b-row align-v="center" align-h="center">
+      <b-col col sm="5" lg="4" xl="3">
+        <transition appear name="slide-left">
+          <div v-if="choiceLoaded" class="col align-middle">
+            <b-button  v-if="choices['c1']['type'] == 1" variant="outline-primary" v-on:click="chooseWinner(0)">
+              <b-img thumbnail :src="choices['c1']['bytestream']"></b-img>
+            </b-button>
+            <b-button v-else variant="outline-primary" v-on:click="chooseWinner(0)" >
+              {{ choices['c1']['bytestream'] }}
+            </b-button>
+          </div>
+        </transition>
+      </b-col>
+      <b-col cols="auto">VS</b-col>
+      <b-col col sm="5" lg="4" xl="3">
+        <transition appear name="slide-right">
+          <div v-if="choiceLoaded" class="col align-middle">
+            <b-button  v-if="choices['c2']['type'] == 1" variant="outline-primary" v-on:click="chooseWinner(1)">
+              <b-img thumbnail :src="choices['c2']['bytestream']"></b-img>
+            </b-button>
+            <b-button v-else variant="outline-primary" v-on:click="chooseWinner(1)" >
+              {{ choices['c2']['bytestream'] }}
+            </b-button>
+          </div>
+        </transition>
+      </b-col>
+    </b-row>
   </div>
 </template>
 

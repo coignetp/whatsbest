@@ -1,12 +1,12 @@
 <template>
   <div class="mash_result">
-    Result of mashing n°{{ $route.params.id }} <br />
-    <router-link :to="'/mash/' + $route.params.id">Back to mash sample</router-link>
+    <b-button variant="outline-primary" :to="'/mash/' + $route.params.id">Back to the decisions!</b-button>
     <hr />
     <div class="results">
-      {{ question }} <br />
+      {{ question }}
+      <hr />
       <transition-group appear name="slide-right">
-        <div class="row" v-for="(choice, rank) in choices" :key="rank">
+        <div class="row" v-for="(choice, rank) in choices" :key="`key-${rank}`">
           <div class="col-md-4 offset-md-4">
             {{ rank + 1 }}: {{ choice["elo"] }} <br />
             <b-button v-if="choice['type'] == 1" :pressed="true" variant="outline-primary">

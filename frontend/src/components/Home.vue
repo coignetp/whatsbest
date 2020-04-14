@@ -1,6 +1,6 @@
 <template>
   <div class="big_button">
-    Welcome <br />
+    You wanna rank some stuff? Do it here! <br/><br/>
     <b-button variant="outline-primary" to="/mash/create">Start a tournament</b-button>
   </div>
 </template>
