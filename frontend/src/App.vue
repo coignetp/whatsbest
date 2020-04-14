@@ -1,11 +1,6 @@
 <template>
   <div class="app">
-    <div class="nav">
-      <router-link icon class="h3 mb-2" to="/"><b-icon icon="house-door-fill"></b-icon></router-link>
-    </div>
-    <div id="core-view">
-      <router-view></router-view>
-    </div>
+    <router-view></router-view>
   </div>
 </template>
 
@@ -21,12 +16,12 @@ export default {
 </script>
 
 <style>
-#core-view {
+.app {
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: #2c3e50;
-  margin-top: 60px;
+  margin-top: 30px;
 }
 </style>

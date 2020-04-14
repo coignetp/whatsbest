@@ -1,6 +1,13 @@
 <template>
   <div class="mash_result">
-    <b-button variant="outline-primary" :to="'/mash/' + $route.params.id">Back to the decisions!</b-button>
+    <b-row align-h="start">
+      <b-col cols="2" align-h="left">
+        <router-link icon class="h3" to="/"><b-icon icon="house-door-fill"></b-icon></router-link>
+      </b-col>
+      <b-col cols="8">
+        <b-button variant="outline-primary" :to="'/mash/' + $route.params.id">Back to the decisions!</b-button>
+      </b-col>
+    </b-row>
     <hr />
     <div class="results">
       {{ question }}
