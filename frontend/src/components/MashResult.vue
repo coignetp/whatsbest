@@ -8,7 +8,10 @@
       <div class="row" v-for="(choice, rank) in choices" :key="rank">
         <div class="col-md-4 offset-md-4">
           {{ rank + 1 }}: {{ choice["elo"] }} <br />
-          <b-img thumbnail :src="choice['bytestream']"></b-img>
+          <b-button v-if="choice['type'] == 1" :pressed="true" variant="outline-primary">
+            <b-img thumbnail :src="choice['bytestream']"></b-img>
+          </b-button>
+          <b-button v-else :pressed="true" variant="outline-primary">{{ choice['bytestream'] }}</b-button>
         </div>
       </div>
     </div>

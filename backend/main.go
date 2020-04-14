@@ -16,7 +16,7 @@ func main() {
   rand.Seed(time.Now().UTC().UnixNano())
   
   // Clear database
-  // os.Remove("tournament.db")
+  os.Remove("tournament.db")
   _, err := os.Stat("tournament.db")
 
   if os.IsNotExist(err) {

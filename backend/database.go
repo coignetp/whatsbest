@@ -63,7 +63,7 @@ func createTables(db *sql.DB) {
   defer statement.Close()
 }
 
-func addTournament(db *sql.DB, question string, size int, choices []string, choicesType int) int {
+func addTournament(db *sql.DB, question string, size int, choices []string, choicesType []int) int {
   var id = rand.Int31()
   baseElo := 1000
   baseRound := 0
@@ -84,8 +84,9 @@ func addTournament(db *sql.DB, question string, size int, choices []string, choi
   defer statement.Close()
 
   for i := 0; i < size; i++ {
+    log.Print("Inserting")
     choiceStatement, _ := tx.Prepare("INSERT INTO choices (idTournament, type, bytestream, elo, totalround) values (?,?,?,?,?);")
-    res, err := choiceStatement.Exec(id, choicesType, choices[i], baseElo, baseRound)
+    res, err := choiceStatement.Exec(id, choicesType[i], choices[i], baseElo, baseRound)
     if err != nil {
       log.Print(err.Error())
     }
@@ -111,9 +112,9 @@ func addTournament(db *sql.DB, question string, size int, choices []string, choi
 
 func getTwoChoices(db *sql.DB, idTournament int) (Choice, Choice, bool) {
   strId := strconv.Itoa(idTournament)
-  query := "SELECT * FROM choices WHERE idTournament=" + strId + " ORDER BY RANDOM() LIMIT 2;"
+  query := "SELECT * FROM choices WHERE idTournament=? ORDER BY RANDOM() LIMIT 2;"
 
-  choices, err := db.Query(query)
+  choices, err := db.Query(query, strId)
   if err != nil {
     log.Print(err.Error())
   }
@@ -137,9 +138,9 @@ func getTwoChoices(db *sql.DB, idTournament int) (Choice, Choice, bool) {
 
 func getAllChoices(db *sql.DB, idTournament int) []Choice {
   strId := strconv.Itoa(idTournament)
-  query := "SELECT * FROM choices WHERE idTournament=" + strId + " ORDER BY elo DESC;"
+  query := "SELECT * FROM choices WHERE idTournament=? ORDER BY elo DESC;"
 
-  choices, err := db.Query(query)
+  choices, err := db.Query(query, strId)
   if err != nil {
     log.Print(err.Error())
   }
@@ -176,9 +177,9 @@ func setElo(db *sql.DB, idChoice, newElo int) bool {
 
 func getQuestion(db *sql.DB, idTournament int) string {
   strId := strconv.Itoa(idTournament)
-  query := "SELECT question FROM tournaments WHERE id=" + strId + ";"
+  query := "SELECT question FROM tournaments WHERE id=?;"
 
-  tournament, err := db.Query(query)
+  tournament, err := db.Query(query, strId)
   if err != nil {
     log.Print(err.Error())
   }

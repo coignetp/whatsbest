@@ -5,21 +5,34 @@
     <div class="mash-create-choices">
       <b-container fluid>
         <b-row class="my-1">
-          <b-col sm="3">
+          <b-col sm="3" offset="2">
             <label>Question: </label>
           </b-col>
-          <b-col sm="9">
+          <b-col sm="5">
             <b-form-input v-model="question" type="text" placeholder="What's best?"></b-form-input>
           </b-col>
         </b-row>
-        <vue-dropzone ref="dropzone" id="dropzone" :options="dropzoneOptions"></vue-dropzone>
+        <br/>
+        <label>Choices</label>
+        <b-tabs>
+          <b-tab title="Images" active>
+            <vue-dropzone ref="dropzone" id="dropzone" :options="dropzoneOptions"></vue-dropzone>
+          </b-tab>
+          <b-tab title="Text">
+            <b-form-textarea
+              id="textarea"
+              v-model="textchoices"
+              placeholder="Choice 1
+Choice 2"
+            ></b-form-textarea>
+          </b-tab>
+        </b-tabs>
       </b-container>
     </div>
   </div>
 </template>
 
 <script>
-// import PictureInput from 'vue-picture-input';
 import vue2Dropzone from "vue2-dropzone";
 import 'vue2-dropzone/dist/vue2Dropzone.min.css'
 import 'bootstrap/dist/css/bootstrap.css'
@@ -42,9 +55,11 @@ export default {
   data() {
     return {
       images: [],
-      question: "",
+      question: "What's the best choice?",
+      textchoices: "",
       dropzoneOptions: {
         url: 'https://httpbin.org/post',
+        dictDefaultMessage: 'Drop images here to upload',
         resizeWidth: 200,
         resizeHeight: 300,
         maxFilesize: 0.5,
@@ -76,14 +91,14 @@ export default {
       return false;
     },
     async createTournamentRequest() {
-      if (this.question.length == 0 || this.images.length < 2) {
+      const tchoices = this.textchoices.split("\n");
+      if (this.question.length == 0 || this.images.length + tchoices.length < 2) {
         return null;
       }
       let tournament = {
         "question": this.question,
-        "size": this.images.length,
-        "type": 1,
-        "choices": [],
+        "size": this.images.length + tchoices.length,
+        "choices": tchoices,
       };
 
       let img;

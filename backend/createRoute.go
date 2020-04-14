@@ -12,7 +12,6 @@ import (
 type RequestTournament struct {
   Question  string    `json:"question"`
   Size      int       `json:"size"`
-  Type      int       `json:"type"`
   Choices   []string  `json:"choices"`
 }
 
@@ -30,15 +29,20 @@ func createTournamentRoute(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 
     log.Println("Question: " + requestTournament.Question)
     var id int
+    var resizedChoices []string
+    var typeChoices []int
 
-    if requestTournament.Type == 1 {
-      var resizedChoices []string
 
-      for i := 0; i < requestTournament.Size; i++ {
-        resizedChoices = append(resizedChoices, checkAndResizeImage(requestTournament.Choices[i]))
+    for i := 0; i < requestTournament.Size; i++ {
+      c, t, err := checkAndProcessChoice(requestTournament.Choices[i])
+      if err == false {
+        resizedChoices = append(resizedChoices, c)
+        typeChoices = append(typeChoices, t)
       }
-      id = addTournament(db, requestTournament.Question, requestTournament.Size, resizedChoices, requestTournament.Type)
     }
+    
+    id = addTournament(db, requestTournament.Question, len(resizedChoices), resizedChoices, typeChoices)
+
     w.Header().Set("Content-Type", "application/json")
     w.WriteHeader(http.StatusOK)
     w.Write([]byte("{\"id\": \"" + strconv.FormatInt(int64(id), 16) + "\"}"))
@@ -46,20 +50,26 @@ func createTournamentRoute(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 }
 
 
-func checkAndResizeImage(b64 string) string {
+func checkAndProcessChoice(b64 string) (string, int, bool) {
+  if !strings.HasPrefix(b64, "data:image/") {
+    // Raw choice
+    return b64, 0, false
+  }
+  log.Printf("%+v is", b64)
+  
   splitted := strings.SplitN(b64, ",", 2)
 
   // Wrong format
   if len(splitted) != 2 {
     log.Print("Wrong formatted file")
-    return ""
+    return "", 1, true
   }
 
   if (strings.Contains(splitted[0], "image/jpg") || strings.Contains(splitted[0], "image/jpeg") || strings.Contains(splitted[0], "image/png") || strings.Contains(splitted[0], "image/gif")) {
-    // TODO: resize
+    // TODO: resize ?
 
-    return b64
+    return b64, 1, false
   }
 
-  return ""
+  return "", 1, true
 }

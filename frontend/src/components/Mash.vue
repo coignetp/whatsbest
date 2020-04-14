@@ -5,12 +5,22 @@
     <hr />
     {{ choices["question"] }}
     <div class="row justify-content-md-center">
-      <div class="col col-md-3">
-        <b-img thumbnail v-on:click="chooseWinner(0)" :src="choices['c1']['bytestream']"></b-img>
+      <div class="col col-md-3 align-middle">
+        <b-button  v-if="choices['c1']['type'] == 1" variant="outline-primary" v-on:click="chooseWinner(0)">
+          <b-img thumbnail :src="choices['c1']['bytestream']"></b-img>
+        </b-button>
+        <b-button v-else variant="outline-primary" v-on:click="chooseWinner(0)" >
+          {{ choices['c1']['bytestream'] }}
+        </b-button>
       </div>
       <div class="col-md-auto">VS</div>
-      <div class="col col-md-3">
-        <b-img thumbnail v-on:click="chooseWinner(1)" :src="choices['c2']['bytestream']"></b-img>
+      <div class="col col-md-3 align-middle">
+        <b-button  v-if="choices['c2']['type'] == 1" variant="outline-primary" v-on:click="chooseWinner(1)">
+          <b-img thumbnail :src="choices['c2']['bytestream']"></b-img>
+        </b-button>
+        <b-button v-else variant="outline-primary" v-on:click="chooseWinner(1)" >
+          {{ choices['c2']['bytestream'] }}
+        </b-button>
       </div>
     </div>
   </div>
