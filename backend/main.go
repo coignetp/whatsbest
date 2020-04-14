@@ -14,6 +14,9 @@ import (
 func main() {
   log.Print("Listening :8081")
   rand.Seed(time.Now().UTC().UnixNano())
+
+  fs := http.FileServer(http.Dir("./web/dist"))
+  http.Handle("/", fs)
   
   // Clear database
   os.Remove("tournament.db")
