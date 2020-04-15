@@ -49,7 +49,11 @@ export default {
       this.question = res.data["question"];
       this.choices = res.data["result"];
     } catch(e) {
-      console.error(e);
+      if (e.response.status == 404) {
+        window.location.replace("#/notfound");
+      } else {
+        console.error(e);
+      }
     }
   }
 }

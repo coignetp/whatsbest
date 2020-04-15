@@ -19,8 +19,8 @@ func main() {
   log.Printf("Listening :%s", port)
   rand.Seed(time.Now().UTC().UnixNano())
 
-  fs := http.FileServer(http.Dir("./web/dist"))
-  http.Handle("/", fs)
+  // fs := http.FileServer(http.Dir("./web/dist"))
+  // http.Handle("/", fs)
   
   // Clear database
   os.Remove("tournament.db")

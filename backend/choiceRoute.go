@@ -55,6 +55,7 @@ func createChoice(w http.ResponseWriter, r *http.Request, db *sql.DB) {
   
   retChoices := NewResponseChoice(db, idTournament)
   if retChoices == nil {
+    w.WriteHeader(http.StatusNotFound)
     w.Write([]byte("Not found"))
     return
   }

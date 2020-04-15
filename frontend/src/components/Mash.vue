@@ -118,7 +118,11 @@ export default {
       this.choices = res.data;
       this.choiceLoaded = true;
     } catch(e) {
-      console.error(e);
+      if (e.response.status == 404) {
+        window.location.replace("#/notfound");
+      } else {
+        console.error(e);
+      }
     }
   }
 }

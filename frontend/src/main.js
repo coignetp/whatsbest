@@ -8,6 +8,7 @@ import Home from './components/Home.vue';
 import Mash from './components/Mash.vue';
 import MashCreate from './components/MashCreate.vue';
 import MashResult from './components/MashResult.vue';
+import NotFound from './components/NotFound.vue';
 
 Vue.config.productionTip = false;
 Vue.use(VueRouter);
@@ -23,6 +24,7 @@ const router = new VueRouter({
     { path: '/mash/create', component: MashCreate },
     { path: '/mash/:id', component: Mash },
     { path: '/mash/:id/result', component: MashResult },
+    { path: '*', component: NotFound },
   ]
 });
 

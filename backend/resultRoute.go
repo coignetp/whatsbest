@@ -15,9 +15,15 @@ func resultRoute(w http.ResponseWriter, r *http.Request, db *sql.DB) {
     idTournament64, _ := strconv.ParseInt(r.URL.Query().Get("id"), 16, 32)
     idTournament := int(idTournament64)
     log.Print(idTournament)
-  
+
     result := getAllChoices(db, idTournament)
     question := getQuestion(db, idTournament)
+
+    if len(result) == 0 {
+      w.WriteHeader(http.StatusNotFound)
+      w.Write([]byte("Not found"))
+      return
+    }
 
     jsonResult, err := json.Marshal(result)
     if err != nil {
