@@ -104,7 +104,7 @@ export default {
       this.choices["c2"]["idtournament"] = parseInt(this.$route.params.id, 16);
 
       try {
-        const res = await axios.post("http://localhost:8081/choice", this.choices, config)
+        const res = await axios.post("/api/choice", this.choices, config)
         this.displayNewChoice(res.data);
       } catch(e) {
         console.error(e);
@@ -113,7 +113,7 @@ export default {
   },
   async created() {
     try {
-      const res = await axios.get("http://localhost:8081/choice", {params: {id: this.$route.params.id}})
+      const res = await axios.get("/api/choice", {params: {id: this.$route.params.id}})
       console.log(res.data);
       this.choices = res.data;
       this.choiceLoaded = true;

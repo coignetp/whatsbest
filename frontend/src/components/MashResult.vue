@@ -44,7 +44,7 @@ export default {
   },
   async created() {
     try {
-      const res = await axios.get("http://localhost:8081/result", {params: {id: this.$route.params.id}})
+      const res = await axios.get("/api/result", {params: {id: this.$route.params.id}})
       console.log(res.data);
       this.question = res.data["question"];
       this.choices = res.data["result"];
