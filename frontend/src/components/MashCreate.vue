@@ -7,6 +7,8 @@
       <b-col cols="8">
         <b-button variant="outline-primary" @click="startTournament">Let's start!</b-button>
       </b-col>
+      <notifications group="missing_choices" />
+      <notifications group="missing_question" />
     </b-row>
     <hr />
     <div class="mash-create-choices">
@@ -103,7 +105,22 @@ export default {
       const tchoices = this.textchoices.split("\n").filter(function(el) {
         return el.length > 0;
       });
-      if (this.question.length == 0 || this.images.length + tchoices.length < 2) {
+      if (this.question.length == 0) {
+        this.$notify({
+          group: "missing_question",
+          type: "error",
+          title: "Missing question",
+          text: "Complete the 'Question' field before starting the tournament."
+        });
+        return null;
+      }
+      if (this.images.length + tchoices.length < 2) {
+        this.$notify({
+          group: "missing_choices",
+          type: "error",
+          title: "Not enough choices",
+          text: "You need at least 2 different choices to start the tournament. In Text, you can separate them with newlines."
+        });
         return null;
       }
       let tournament = {

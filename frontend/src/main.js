@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router';
 import { BootstrapVue, BootstrapVueIcons } from 'bootstrap-vue';
+import Notifications from 'vue-notification';
 
 import App from './App.vue';
 import Home from './components/Home.vue';
@@ -12,6 +13,7 @@ Vue.config.productionTip = false;
 Vue.use(VueRouter);
 Vue.use(BootstrapVue);
 Vue.use(BootstrapVueIcons);
+Vue.use(Notifications);
 
 // const NotFound = { template: '<p>Page not found</p>' }
 
