@@ -30,4 +30,4 @@ COPY --from=front-builder /web/dist/ /app/web/dist
 RUN go get "github.com/mattn/go-sqlite3"
 RUN go build -o backend .
 
-CMD ["/app/backend $PORT"]
+CMD ["/app/backend"]
