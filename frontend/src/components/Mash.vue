@@ -10,7 +10,7 @@
     </b-row>
     <hr />
     <transition name="fade-taunt">
-      <b-container ref="questionContainer" v-if="lastOpinion.length > 0 && choiceLoaded" fluid>
+      <b-container ref="questionContainer" v-if="lastOpinion.length > 0" fluid>
         <b-row align-v="center" align-h="center"><h5>{{ lastOpinion }}</h5></b-row>
       </b-container>
     </transition>
@@ -32,7 +32,14 @@
           </div>
         </transition>
       </b-col>
-      <b-col cols="auto"><h1><b>VS</b></h1></b-col>
+      <transition name="fade-taunt">
+        <b-col cols="auto">
+          <h1 v-if="choiceLoaded"><b>VS</b></h1>
+          <div v-if="!choiceLoaded" class="spinner-border text-primary" role="status">
+            <span class="sr-only">Loading...</span>
+          </div>
+        </b-col>
+      </transition>
       <b-col col sm="5" lg="4" xl="3">
         <transition appear name="slide-right">
           <div v-if="choiceLoaded" class="col align-middle">
@@ -85,11 +92,11 @@ export default {
     displayNewChoice(data) {
       console.log(data);
       this.choices = data;
-      this.lastOpinion = this.opinions[Math.floor(Math.random() * this.opinions.length)];
       this.choiceLoaded = true; 
     },
 
     async chooseWinner(i) {
+      this.lastOpinion = ""
       this.choiceLoaded = false;
       this.choices["winner"] = i;
 
@@ -106,6 +113,7 @@ export default {
       this.choices["c2"]["idtournament"] = parseInt(this.$route.params.id, 16);
 
       try {
+        this.lastOpinion = this.opinions[Math.floor(Math.random() * this.opinions.length)];
         const res = await axios.post("/api/choice", this.choices, config)
         this.displayNewChoice(res.data);
       } catch(e) {
