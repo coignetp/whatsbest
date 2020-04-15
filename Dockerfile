@@ -24,6 +24,7 @@ ADD ./backend /app
 WORKDIR /app
 
 COPY ./backend /app
+RUN pwd && ls -la
 COPY --from=front-builder /web/dist/ /app/web/dist
 
 RUN go get "github.com/mattn/go-sqlite3"
