@@ -13,8 +13,8 @@
     <hr />
     <div class="mash-create-choices">
       <b-container fluid>
-        <b-row class="my-1">
-          <b-col sm="3" offset="2">
+        <b-row class="my-4" align-v="center">
+          <b-col sm="3" offset-sm="2">
             <label>Question: </label>
           </b-col>
           <b-col sm="5">
@@ -22,10 +22,10 @@
           </b-col>
         </b-row>
         <br/>
-        <label>Possible choices</label>
-        <b-tabs>
+        <label>Possible choices:</label>
+        <b-tabs nav-class="ml-1">
           <b-tab title="Images" active>
-            <vue-dropzone ref="dropzone" id="dropzone" :options="dropzoneOptions"></vue-dropzone>
+            <vue-dropzone ref="dropzone" id="dropzone" :options="dropzoneOptions" style="border-radius:5px"></vue-dropzone>
           </b-tab>
           <b-tab title="Text">
             <b-form-textarea

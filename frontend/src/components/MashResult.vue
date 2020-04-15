@@ -10,10 +10,12 @@
     </b-row>
     <hr />
     <div class="results">
-      <h3><b>{{ question }}</b></h3>
+      <transition name="fade-taunt" appear>
+        <h3><b>{{ question }}</b></h3>
+      </transition>
       <hr />
-      <transition-group appear name="slide-right">
-        <b-row v-for="(choice, rank) in choices" :key="rank+1" class="mb-4" align-v="center">
+      <transition-group appear name="res-fade">
+        <b-row v-for="(choice, rank) in choices" :key="rank+1" class="mt-4 mx-4" align-v="center">
           <b-col cols='2' offset-md='1' offset-lg='2'>
             <h4><b>{{ rank + 1 }}</b></h4> score: {{ choice["elo"] }}
           </b-col>

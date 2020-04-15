@@ -7,7 +7,7 @@
   transform: translateX(-40%);
 }
 .slide-left-enter-active, .slide-left-leave-active {
-  transition: all 300ms ease-in;
+  transition: all 400ms ease-in;
 }
 
 .slide-right-enter {
@@ -19,7 +19,7 @@
   transform: translateX(40%);
 }
 .slide-right-enter-active, .slide-right-leave-active {
-  transition: all 300ms ease-in;
+  transition: all 400ms ease-in;
 }
 
 .res-fade-enter {
@@ -31,7 +31,17 @@
   transform: translateX(5%);
 }
 .res-fade-enter-active, .res-fade-leave-active {
-  transition: all 300ms ease-in;
+  transition: all 400ms ease-in;
+}
+
+.fade-taunt-enter {
+  opacity: 0;
+}
+.fade-taunt-leave-to {
+  opacity: 1;
+}
+.fade-taunt-enter-active, .fade-taunt-leave-active {
+  transition: all 200ms ease-in;
 }
 
 #mash-create {

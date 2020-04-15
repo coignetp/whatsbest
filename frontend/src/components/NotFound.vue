@@ -1,5 +1,5 @@
 <template>
-  <b-row align-h="start">
+  <b-row align-h="start" align-v="center" class="mt-5">
     <b-col cols="2" align-h="left">
       <router-link icon class="h3" to="/"><b-icon icon="house-door-fill"></b-icon></router-link>
     </b-col>

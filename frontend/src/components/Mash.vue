@@ -9,15 +9,17 @@
       </b-col>
     </b-row>
     <hr />
-    <transition name="slide-left">
-      <b-container ref="questionContainer" v-if="lastOpinion.length > 0" fluid>
-        <b-row align-v="center" align-h="center">{{ lastOpinion }}</b-row>
+    <transition name="fade-taunt">
+      <b-container ref="questionContainer" v-if="lastOpinion.length > 0 && choiceLoaded" fluid>
+        <b-row align-v="center" align-h="center"><h5>{{ lastOpinion }}</h5></b-row>
       </b-container>
     </transition>
     <hr v-if="lastOpinion.length > 0" />
-    <h3><b>{{ choices["question"] }}</b></h3>
+    <transition name="fade-taunt" appear>
+      <h3><b>{{ choices["question"] }}</b></h3>
+    </transition>
     <hr/>
-    <b-row align-v="center" align-h="center">
+    <b-row class="mt-5" align-v="center" align-h="center">
       <b-col col sm="5" lg="4" xl="3">
         <transition appear name="slide-left">
           <div v-if="choiceLoaded" class="col align-middle">

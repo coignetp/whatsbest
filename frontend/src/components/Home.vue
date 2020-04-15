@@ -1,7 +1,9 @@
 <template>
   <div class="big_button">
-    You wanna rank some stuff? Do it here! <br/><br/>
-    <b-button variant="outline-primary" to="/mash/create">Start a tournament</b-button>
+    <b-row align-h="center" class="my-5"><h4>You wanna rank some stuff? Do it here!</h4></b-row>
+    <b-row align-h="center">
+      <b-button variant="outline-primary" to="/mash/create"><h4>Start a tournament</h4></b-button>
+    </b-row>
   </div>
 </template>
 
