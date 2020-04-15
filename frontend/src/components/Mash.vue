@@ -15,7 +15,7 @@
       </b-container>
     </transition>
     <hr v-if="lastOpinion.length > 0" />
-    {{ choices["question"] }}
+    <h3><b>{{ choices["question"] }}</b></h3>
     <hr/>
     <b-row align-v="center" align-h="center">
       <b-col col sm="5" lg="4" xl="3">
@@ -30,7 +30,7 @@
           </div>
         </transition>
       </b-col>
-      <b-col cols="auto">VS</b-col>
+      <b-col cols="auto"><h1><b>VS</b></h1></b-col>
       <b-col col sm="5" lg="4" xl="3">
         <transition appear name="slide-right">
           <div v-if="choiceLoaded" class="col align-middle">

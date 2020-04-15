@@ -10,18 +10,20 @@
     </b-row>
     <hr />
     <div class="results">
-      {{ question }}
+      <h3><b>{{ question }}</b></h3>
       <hr />
       <transition-group appear name="slide-right">
-        <div class="row" v-for="(choice, rank) in choices" :key="`key-${rank}`">
-          <div class="col-md-4 offset-md-4">
-            {{ rank + 1 }}: {{ choice["elo"] }} <br />
+        <b-row v-for="(choice, rank) in choices" :key="rank+1" class="mb-4" align-v="center">
+          <b-col cols='2' offset-md='1' offset-lg='2'>
+            <h4><b>{{ rank + 1 }}</b></h4> score: {{ choice["elo"] }}
+          </b-col>
+          <b-col cols='8' md='6' lg='4'>
             <b-button v-if="choice['type'] == 1" :pressed="true" variant="outline-primary">
               <b-img thumbnail :src="choice['bytestream']"></b-img>
             </b-button>
             <b-button v-else :pressed="true" variant="outline-primary">{{ choice['bytestream'] }}</b-button>
-          </div>
-        </div>
+          </b-col>
+        </b-row>
       </transition-group>
     </div>
   </div>
