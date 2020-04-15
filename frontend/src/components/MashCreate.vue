@@ -141,7 +141,7 @@ export default {
         };
 
         try {
-          const res = await axios.post("http://localhost:8081/create", tournament, config);
+          const res = await axios.post("/api/create", tournament, config);
           if (res.status == 200) {
             this.image = '';
               console.log("Tournament successfully created");

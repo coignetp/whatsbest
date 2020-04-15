@@ -12,7 +12,11 @@ import (
 )
 
 func main() {
-  log.Print("Listening :8081")
+  port := "8081"
+  if len(os.Args) >= 2 {
+    port = os.Args[1]
+  }
+  log.Printf("Listening :%s", port)
   rand.Seed(time.Now().UTC().UnixNano())
 
   fs := http.FileServer(http.Dir("./web/dist"))
@@ -38,9 +42,9 @@ func main() {
 
   createTables(sqliteDatabase)
 
-  http.HandleFunc("/create", makeDbClientHandler(createTournamentRoute, sqliteDatabase))
-  http.HandleFunc("/choice", makeDbClientHandler(choiceRoute, sqliteDatabase))
-  http.HandleFunc("/result", makeDbClientHandler(resultRoute, sqliteDatabase))
+  http.HandleFunc("/api/create", makeDbClientHandler(createTournamentRoute, sqliteDatabase))
+  http.HandleFunc("/api/choice", makeDbClientHandler(choiceRoute, sqliteDatabase))
+  http.HandleFunc("/api/result", makeDbClientHandler(resultRoute, sqliteDatabase))
 
-  log.Fatal(http.ListenAndServe(":8081", nil))
+  log.Fatal(http.ListenAndServe(":" + port, nil))
 }
