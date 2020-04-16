@@ -1,4 +1,5 @@
-# Only used to deploy on heroku
+# Heroku free version only expose one container
+# So the frontend must be built and expose via the backend
 
 # frontend builder
 FROM node:alpine AS front-builder
@@ -30,4 +31,4 @@ COPY --from=front-builder /web/dist/ /app/web/dist
 RUN go get "github.com/mattn/go-sqlite3"
 RUN go build -o backend .
 
-CMD /app/backend $PORT
+CMD /app/backend -port=$PORT

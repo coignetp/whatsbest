@@ -26,4 +26,4 @@ RUN go build -o backend .
 
 # Our start command which kicks off
 # our newly created binary executable
-CMD ["/app/backend"]
+CMD "/app/backend" -dev -port:8081
