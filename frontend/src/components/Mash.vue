@@ -19,6 +19,7 @@
       <h3><b>{{ choices["question"] }}</b></h3>
     </transition>
     <hr/>
+    <!-- Display the 2 possible choices according to their type. 1 is image, 0 is other. -->
     <b-row class="mt-5" align-v="center" align-h="center">
       <b-col col sm="5" lg="4" xl="3">
         <transition appear name="slide-left">
@@ -68,6 +69,7 @@ export default {
   name: 'Mash',
   data() {
     return {
+      // Little taunt after the user made a choice
       lastOpinion: "",
       choiceLoaded: false,
       choices: {
@@ -85,6 +87,13 @@ export default {
         "Meh..",
         "Did you read the question?",
         "Why not",
+        "If you say so",
+        "Are you sure?",
+        "You chose poorly",
+        "You have chosen... wisely",
+        "This one was easy",
+        "The next one is easier",
+        "You did your best",
       ],
     }
   },
@@ -96,6 +105,7 @@ export default {
     },
 
     async chooseWinner(i) {
+      // Send the winner to the backend
       this.lastOpinion = ""
       this.choiceLoaded = false;
       this.choices["winner"] = i;
@@ -115,7 +125,8 @@ export default {
       try {
         this.lastOpinion = this.opinions[Math.floor(Math.random() * this.opinions.length)];
         const endpoint = process.env.VUE_APP_BACKEND_BASE_ADDRESS + "/api/choice";
-        const res = await axios.post(endpoint, this.choices, config)
+        // Once the winner is sent, the frontend receive a new choice to display
+        const res = await axios.post(endpoint, this.choices, config);
         this.displayNewChoice(res.data);
       } catch(e) {
         console.error(e);

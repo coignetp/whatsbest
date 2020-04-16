@@ -69,6 +69,7 @@ export default {
       question: "What's the best choice?",
       textchoices: "",
       dropzoneOptions: {
+        // url to accept the uploaded file
         url: 'https://httpbin.org/post',
         dictDefaultMessage: 'Drop images here to upload',
         resizeWidth: 200,
@@ -79,14 +80,11 @@ export default {
     }
   },
   created() {
+    // Link the dropzone with custom methods after the component creation
     this.dropzoneOptions.accept = this.acceptUploadedFile;
     this.dropzoneOptions.removedfile = this.removeUploadedFile;
   },
   methods: {
-    questionChanged(val, oldVal) {
-      console.log(val);
-      console.log(oldVal);
-    },
     async acceptUploadedFile(file, done) {
       this.images.push([file.upload.uuid, file]);
       done();
@@ -105,6 +103,7 @@ export default {
       const tchoices = this.textchoices.split("\n").filter(function(el) {
         return el.length > 0;
       });
+      // The question field must not be empty
       if (this.question.length == 0) {
         this.$notify({
           group: "missing_question",
@@ -114,6 +113,7 @@ export default {
         });
         return null;
       }
+      // At least 2 choices (images + text)
       if (this.images.length + tchoices.length < 2) {
         this.$notify({
           group: "missing_choices",
@@ -129,6 +129,7 @@ export default {
         "choices": tchoices,
       };
 
+      // Convert images to base64 before sending it to the backend
       let img;
       for (img of this.images) {
         if (img != null) {
@@ -161,9 +162,9 @@ export default {
           const endpoint = process.env.VUE_APP_BACKEND_BASE_ADDRESS + "/api/create";
           const res = await axios.post(endpoint, tournament, config);
           if (res.status == 200) {
-            this.image = '';
-              console.log("Tournament successfully created");
-              window.location.replace("#/mash/" + res.data["id"]);
+            // Once the tournament is created, the user is sent to the choices
+            console.log("Tournament successfully created");
+            window.location.replace("#/mash/" + res.data["id"]);
           } else {
             console.error(res);
           }
