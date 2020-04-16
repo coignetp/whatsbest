@@ -158,7 +158,8 @@ export default {
         };
 
         try {
-          const res = await axios.post("/api/create", tournament, config);
+          const endpoint = process.env.VUE_APP_BACKEND_BASE_ADDRESS + "/api/create";
+          const res = await axios.post(endpoint, tournament, config);
           if (res.status == 200) {
             this.image = '';
               console.log("Tournament successfully created");

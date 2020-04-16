@@ -114,7 +114,8 @@ export default {
 
       try {
         this.lastOpinion = this.opinions[Math.floor(Math.random() * this.opinions.length)];
-        const res = await axios.post("/api/choice", this.choices, config)
+        const endpoint = process.env.VUE_APP_BACKEND_BASE_ADDRESS + "/api/choice";
+        const res = await axios.post(endpoint, this.choices, config)
         this.displayNewChoice(res.data);
       } catch(e) {
         console.error(e);
@@ -123,7 +124,8 @@ export default {
   },
   async created() {
     try {
-      const res = await axios.get("/api/choice", {params: {id: this.$route.params.id}})
+      const endpoint = process.env.VUE_APP_BACKEND_BASE_ADDRESS + "/api/choice";
+      const res = await axios.get(endpoint, {params: {id: this.$route.params.id}})
       console.log(res.data);
       this.choices = res.data;
       this.choiceLoaded = true;

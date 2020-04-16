@@ -48,7 +48,8 @@ export default {
   },
   async created() {
     try {
-      const res = await axios.get("/api/result", {params: {id: this.$route.params.id}})
+      const endpoint = process.env.VUE_APP_BACKEND_BASE_ADDRESS + "/api/result";
+      const res = await axios.get(endpoint , {params: {id: this.$route.params.id}});
       console.log(res.data);
       this.question = res.data["question"];
       this.choices = res.data["result"];
