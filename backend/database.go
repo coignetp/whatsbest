@@ -17,6 +17,7 @@ type Choice struct {
   Totalround    int     `json:"totalround"`
 }
 
+// Called at the begining to create all the different tables
 func createTables(db *sql.DB) {
   createTournamentSQL := `CREATE TABLE IF NOT EXISTS tournaments (
     "id" INTEGER PRIMARY KEY,
@@ -63,13 +64,12 @@ func createTables(db *sql.DB) {
   defer statement.Close()
 }
 
+// Create a new tournament in the database with a random id and send this id back
 func addTournament(db *sql.DB, question string, size int, choices []string, choicesType []int) int {
   var id = rand.Int31()
   baseElo := 1000
   baseRound := 0
   // TODO: check id is available
-  // TODO: remove
-  log.Print(id)
 
   if len(choices) != size {
     return -1
@@ -109,6 +109,8 @@ func addTournament(db *sql.DB, question string, size int, choices []string, choi
   return int(id)
 }
 
+// Return 2 random choices from the tournament idTournament
+// If the tournament doesn't exist, the last returned value will be false
 func getTwoChoices(db *sql.DB, idTournament int) (Choice, Choice, bool) {
   strId := strconv.Itoa(idTournament)
   query := "SELECT * FROM choices WHERE idTournament=? ORDER BY RANDOM() LIMIT 2;"
@@ -135,6 +137,8 @@ func getTwoChoices(db *sql.DB, idTournament int) (Choice, Choice, bool) {
   return c1, c2, true
 }
 
+// Return all the exisiting choices in the tournament idTournament
+// If the tournament doesn't exist, the list is empty
 func getAllChoices(db *sql.DB, idTournament int) []Choice {
   strId := strconv.Itoa(idTournament)
   query := "SELECT * FROM choices WHERE idTournament=? ORDER BY elo DESC;"
@@ -155,6 +159,8 @@ func getAllChoices(db *sql.DB, idTournament int) []Choice {
   return result
 }
 
+// Return the most recent elo of the choice idChoice
+// Return -1 if the choice doesn't exist
 func mostRecentElo(db *sql.DB, idChoice int) int {
   query := "SELECT elo FROM choices WHERE id=?;"
 
@@ -174,12 +180,15 @@ func mostRecentElo(db *sql.DB, idChoice int) int {
   return updatedElo
 }
 
+// Update the elo of the idChoice with newElo
+// Return true for success
 func setElo(db *sql.DB, idChoice, newElo int) bool {
   tx, _ := db.Begin()
 
   statement, err := tx.Prepare("UPDATE choices SET elo=? WHERE id=?;")
   if err != nil {
     log.Print(err.Error())
+    return false
   }
   _, err = statement.Exec(newElo, idChoice)
   defer statement.Close()
@@ -193,6 +202,8 @@ func setElo(db *sql.DB, idChoice, newElo int) bool {
   return true
 }
 
+// Return the question of the idTournament
+// If the tournament doesn't exist, return "Unknown" string
 func getQuestion(db *sql.DB, idTournament int) string {
   strId := strconv.Itoa(idTournament)
   query := "SELECT question FROM tournaments WHERE id=?;"

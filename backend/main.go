@@ -22,16 +22,18 @@ func main() {
   log.Printf("Dev mode is %+v", *devMode)
   rand.Seed(time.Now().UTC().UnixNano())
 
+  // In porduction (on heroku), the golang backend serves the frontend
+  // due to the free-tier limitation
   if !*devMode {
     fs := http.FileServer(http.Dir("./web/dist"))
     http.Handle("/", fs)
   } else {
-    // Clear database
+    // Clear database in dev mode
     os.Remove("tournament.db")
   }
 
+  // Initialize everything for the database
   _, err := os.Stat("tournament.db")
-
   if os.IsNotExist(err) {
     file, err := os.Create("tournament.db")
     if err != nil {
@@ -39,7 +41,6 @@ func main() {
     }
     file.Close()
   }
-
   sqliteDatabase, err := sql.Open("sqlite3", "./tournament.db")
   if err != nil {
     log.Fatal(err.Error())
@@ -48,6 +49,7 @@ func main() {
 
   createTables(sqliteDatabase)
 
+  // Create the different routes
   http.HandleFunc("/api/create", makeDbClientHandler(createTournamentRoute, sqliteDatabase))
   http.HandleFunc("/api/choice", makeDbClientHandler(choiceRoute, sqliteDatabase))
   http.HandleFunc("/api/result", makeDbClientHandler(resultRoute, sqliteDatabase))

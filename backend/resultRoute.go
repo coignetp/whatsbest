@@ -8,6 +8,9 @@ import (
   "strconv"
 )
 
+// Only GET requests
+// Send back all the choices of the idTournament given in parameter
+// Send an empty list if the tournament doesn't exist
 func resultRoute(w http.ResponseWriter, r *http.Request, db *sql.DB) {
   enableCors(&w)
 
