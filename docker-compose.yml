@@ -1,5 +1,5 @@
 # Used for development
-version: "3.3"
+version: "3"
 
 services:
   frontend:
@@ -11,3 +11,16 @@ services:
     build: ./backend
     ports:
       - 8081:8081
+    environment:
+      - DATABASE_URL=postgres://user:password@postgres:5432/whatsbest?sslmode=disable
+      - WAIT_HOSTS=postgres:5432
+    depends_on:
+      - postgres
+
+  postgres:
+    image: postgres
+    hostname: postgres
+    environment:
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_USER=user
+      - POSTGRES_DB=whatsbest

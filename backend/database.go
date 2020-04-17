@@ -20,22 +20,22 @@ type Choice struct {
 // Called at the begining to create all the different tables
 func createTables(db *sql.DB) {
   createTournamentSQL := `CREATE TABLE IF NOT EXISTS tournaments (
-    "id" INTEGER PRIMARY KEY,
-    "question" TEXT,
-    "size" INTEGER
+    id INTEGER PRIMARY KEY,
+    question TEXT,
+    size INTEGER
   );`
   createChoiceSQL := `CREATE TABLE IF NOT EXISTS choices (
-    "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
-    "idTournament" INTEGER,
-    "type" INTEGER,
-    "bytestream" BLOB,
-    "elo" INTEGER,
-    "totalround" INTEGER
+    id SERIAL PRIMARY KEY,
+    idTournament INTEGER,
+    type INTEGER,
+    bytestream BYTEA,
+    elo INTEGER,
+    totalround INTEGER
   );`
   createTournamentToChoiceSQL := `CREATE TABLE IF NOT EXISTS tournamentchoice(
-    "idTournament" INTEGER,
-    "idChoice" INTEGER,
-    "choiceNumber" INTEGER,
+    idTournament INTEGER,
+    idChoice INTEGER,
+    choiceNumber INTEGER,
     PRIMARY KEY (idTournament, idChoice)
 	);`
 
@@ -44,7 +44,10 @@ func createTables(db *sql.DB) {
   if err != nil {
     log.Fatal(err.Error())
   }
-  statement.Exec()
+  _, err = statement.Exec()
+  if err != nil {
+    log.Fatal(err.Error())
+  }
   defer statement.Close()
 
   log.Println("Creating Choices table")
@@ -52,7 +55,10 @@ func createTables(db *sql.DB) {
   if err != nil {
     log.Fatal(err.Error())
   }
-  statement.Exec()
+  _, err = statement.Exec()
+  if err != nil {
+    log.Fatal(err.Error())
+  }
   defer statement.Close()
 
   log.Println("Creating TournamentChoice table")
@@ -60,23 +66,40 @@ func createTables(db *sql.DB) {
   if err != nil {
     log.Fatal(err.Error())
   }
-  statement.Exec()
+  _, err = statement.Exec()
+  if err != nil {
+    log.Fatal(err.Error())
+  }
   defer statement.Close()
 }
 
 // Create a new tournament in the database with a random id and send this id back
 func addTournament(db *sql.DB, question string, size int, choices []string, choicesType []int) int {
-  var id = rand.Int31()
   baseElo := 1000
   baseRound := 0
-  // TODO: check id is available
 
   if len(choices) != size {
     return -1
   }
 
   tx, _ := db.Begin()
-  statement, _ := tx.Prepare("INSERT INTO tournaments (id, question, size) values (?,?,?);")
+
+  // Select an available id
+  var id int32 = -1
+  for id == -1 {
+    id = rand.Int31()
+    // TODO: use QueryRow
+    idStatement, _ := tx.Query("SELECT id FROM tournaments WHERE id=$1;", id)
+    defer idStatement.Close()
+
+    if idStatement.Next() {
+      log.Printf("Tournament id %d already exists", id)
+      id = -1
+    }
+  }
+  log.Printf("Creating tournament id %d", id)
+  
+  statement, _ := tx.Prepare("INSERT INTO tournaments (id, question, size) values ($1,$2,$3);")
   _, err := statement.Exec(id, question, size)
   if err != nil {
     log.Print(err.Error())
@@ -84,16 +107,15 @@ func addTournament(db *sql.DB, question string, size int, choices []string, choi
   defer statement.Close()
 
   for i := 0; i < size; i++ {
-    choiceStatement, _ := tx.Prepare("INSERT INTO choices (idTournament, type, bytestream, elo, totalround) values (?,?,?,?,?);")
-    res, err := choiceStatement.Exec(id, choicesType[i], choices[i], baseElo, baseRound)
+    var choiceId int
+    insertChoiceQuery := "INSERT INTO choices (idTournament, type, bytestream, elo, totalround) values ($1,$2,$3,$4,$5) RETURNING id;"
+    choiceStatement := tx.QueryRow(insertChoiceQuery, id, choicesType[i], choices[i], baseElo, baseRound)
+    err := choiceStatement.Scan(&choiceId)
     if err != nil {
       log.Print(err.Error())
     }
-    defer choiceStatement.Close()
 
-    choiceId, _ := res.LastInsertId()
-
-    tournamentChoiceStatement, _ := tx.Prepare("INSERT INTO tournamentchoice (idTournament, idChoice, choiceNumber) values (?,?,?);")
+    tournamentChoiceStatement, _ := tx.Prepare("INSERT INTO tournamentchoice (idTournament, idChoice, choiceNumber) values ($1,$2,$3);")
     _, err = tournamentChoiceStatement.Exec(id, choiceId, i)
     if err != nil {
       log.Print(err.Error())
@@ -113,7 +135,7 @@ func addTournament(db *sql.DB, question string, size int, choices []string, choi
 // If the tournament doesn't exist, the last returned value will be false
 func getTwoChoices(db *sql.DB, idTournament int) (Choice, Choice, bool) {
   strId := strconv.Itoa(idTournament)
-  query := "SELECT * FROM choices WHERE idTournament=? ORDER BY RANDOM() LIMIT 2;"
+  query := "SELECT * FROM choices WHERE idTournament=$1 ORDER BY RANDOM() LIMIT 2;"
 
   choices, err := db.Query(query, strId)
   if err != nil {
@@ -141,7 +163,7 @@ func getTwoChoices(db *sql.DB, idTournament int) (Choice, Choice, bool) {
 // If the tournament doesn't exist, the list is empty
 func getAllChoices(db *sql.DB, idTournament int) []Choice {
   strId := strconv.Itoa(idTournament)
-  query := "SELECT * FROM choices WHERE idTournament=? ORDER BY elo DESC;"
+  query := "SELECT * FROM choices WHERE idTournament=$1 ORDER BY elo DESC;"
 
   choices, err := db.Query(query, strId)
   if err != nil {
@@ -162,7 +184,7 @@ func getAllChoices(db *sql.DB, idTournament int) []Choice {
 // Return the most recent elo of the choice idChoice
 // Return -1 if the choice doesn't exist
 func mostRecentElo(db *sql.DB, idChoice int) int {
-  query := "SELECT elo FROM choices WHERE id=?;"
+  query := "SELECT elo FROM choices WHERE id=$1;"
 
   c, err := db.Query(query, idChoice)
   if err != nil {
@@ -185,7 +207,7 @@ func mostRecentElo(db *sql.DB, idChoice int) int {
 func setElo(db *sql.DB, idChoice, newElo int) bool {
   tx, _ := db.Begin()
 
-  statement, err := tx.Prepare("UPDATE choices SET elo=? WHERE id=?;")
+  statement, err := tx.Prepare("UPDATE choices SET elo=$1 WHERE id=$2;")
   if err != nil {
     log.Print(err.Error())
     return false
@@ -206,7 +228,7 @@ func setElo(db *sql.DB, idChoice, newElo int) bool {
 // If the tournament doesn't exist, return "Unknown" string
 func getQuestion(db *sql.DB, idTournament int) string {
   strId := strconv.Itoa(idTournament)
-  query := "SELECT question FROM tournaments WHERE id=?;"
+  query := "SELECT question FROM tournaments WHERE id=$1;"
 
   tournament, err := db.Query(query, strId)
   if err != nil {

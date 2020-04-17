@@ -14,6 +14,9 @@ RUN mkdir /app
 # into our /app directory
 ADD . /app
 
+# Used to wait for the database to start in docker-compose
+ADD https://github.com/ufoscout/docker-compose-wait/releases/download/2.7.3/wait /wait
+
 # We specify that we now wish to execute 
 # any further commands inside our /app
 # directory
@@ -21,9 +24,9 @@ WORKDIR /app
 
 # we run go build to compile the binary
 # executable of our Go program
-RUN go get "github.com/mattn/go-sqlite3"
+RUN go get "github.com/lib/pq"
 RUN go build -o backend .
 
 # Our start command which kicks off
 # our newly created binary executable
-CMD "/app/backend" -dev -port:8081
+CMD sleep 5s && "/app/backend" -dev -port=8081

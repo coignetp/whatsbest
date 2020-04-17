@@ -10,7 +10,7 @@ import (
   "time"
   "os"
 
-  _ "github.com/mattn/go-sqlite3" // Import go-sqlite3 library
+  _ "github.com/lib/pq"
 )
 
 func main() {
@@ -27,32 +27,20 @@ func main() {
   if !*devMode {
     fs := http.FileServer(http.Dir("./web/dist"))
     http.Handle("/", fs)
-  } else {
-    // Clear database in dev mode
-    os.Remove("tournament.db")
   }
 
-  // Initialize everything for the database
-  _, err := os.Stat("tournament.db")
-  if os.IsNotExist(err) {
-    file, err := os.Create("tournament.db")
-    if err != nil {
-      log.Fatal(err.Error())
-    }
-    file.Close()
-  }
-  sqliteDatabase, err := sql.Open("sqlite3", "./tournament.db")
+  database, err := sql.Open("postgres", os.Getenv("DATABASE_URL"))
   if err != nil {
     log.Fatal(err.Error())
   }
-  defer sqliteDatabase.Close()
+  defer database.Close()
 
-  createTables(sqliteDatabase)
+  createTables(database)
 
   // Create the different routes
-  http.HandleFunc("/api/create", makeDbClientHandler(createTournamentRoute, sqliteDatabase))
-  http.HandleFunc("/api/choice", makeDbClientHandler(choiceRoute, sqliteDatabase))
-  http.HandleFunc("/api/result", makeDbClientHandler(resultRoute, sqliteDatabase))
+  http.HandleFunc("/api/create", makeDbClientHandler(createTournamentRoute, database))
+  http.HandleFunc("/api/choice", makeDbClientHandler(choiceRoute, database))
+  http.HandleFunc("/api/result", makeDbClientHandler(resultRoute, database))
 
   log.Fatal(http.ListenAndServe(":" + strconv.Itoa(*port), nil))
 }
