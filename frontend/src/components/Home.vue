@@ -1,6 +1,6 @@
 <template>
   <div class="big_button">
-    <b-row align-h="center" class="my-5"><h4>You wanna rank some stuff? Do it here!</h4></b-row>
+    <b-row align-h="center" class="my-5 mx-3"><h4>You wanna rank some stuff? Do it here!</h4></b-row>
     <b-row align-h="center">
       <b-button variant="outline-primary" to="/mash/create"><h4>Start a tournament</h4></b-button>
     </b-row>
@@ -17,4 +17,4 @@ export default {
     counter: String
   }
 }
-
+</script>

@@ -1,24 +1,27 @@
 <template>
   <div class="mash">
-    <b-row align-h="start">
-      <b-col cols="2" align-h="left">
+    <b-row align-content="center" class="px-1">
+      <b-col cols="2">
         <router-link icon class="h3" to="/"><b-icon icon="house-door-fill"></b-icon></router-link>
       </b-col>
-      <b-col cols="8">
+      <b-col offset="1" cols="6">
         <b-button variant="outline-primary" :to="'/mash/' + $route.params.id + '/result'">Current ranking</b-button>
+      </b-col>
+      <b-col cols="3">
+        <share-button :modalLink="modalLink" />
       </b-col>
     </b-row>
     <hr />
+    <transition name="fade-taunt" appear>
+      <h3><b>{{ choices["question"] }}</b></h3>
+    </transition>
+    <hr/>
     <transition name="fade-taunt">
       <b-container ref="questionContainer" v-if="lastOpinion.length > 0" fluid>
         <b-row align-v="center" align-h="center"><h5>{{ lastOpinion }}</h5></b-row>
       </b-container>
     </transition>
     <hr v-if="lastOpinion.length > 0" />
-    <transition name="fade-taunt" appear>
-      <h3><b>{{ choices["question"] }}</b></h3>
-    </transition>
-    <hr/>
     <!-- Display the 2 possible choices according to their type. 1 is image, 0 is other. -->
     <b-row class="mt-5" align-v="center" align-h="center">
       <b-col col sm="5" lg="4" xl="3">
@@ -64,9 +67,14 @@ import 'bootstrap-vue/dist/bootstrap-vue.css';
 
 import './../style.css';
 
+import ShareButton from './ShareButton.vue';
+
 
 export default {
   name: 'Mash',
+  components: {
+    ShareButton
+  },
   data() {
     return {
       // Little taunt after the user made a choice
@@ -95,6 +103,7 @@ export default {
         "The next one is easier",
         "You did your best",
       ],
+      modalLink: window.location.href,
     }
   },
   methods: {
