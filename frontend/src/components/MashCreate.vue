@@ -31,13 +31,15 @@
             <b-form-textarea
               id="textarea"
               v-model="textchoices"
-              placeholder="Choice 1
-Choice 2"
+              :placeholder=textPlaceholder
             ></b-form-textarea>
           </b-tab>
         </b-tabs>
       </b-container>
     </div>
+    <b-row class="mt-5" align-h="center"><b-col cols="8">
+      <b-button variant="outline-primary" @click="startTournament">Let's start!</b-button>
+    </b-col></b-row>
   </div>
 </template>
 
@@ -65,6 +67,7 @@ export default {
   },
   data() {
     return {
+      textPlaceholder: "Choice 1\nChoice 2",
       images: [],
       question: "What's the best choice?",
       textchoices: "",
