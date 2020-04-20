@@ -1,6 +1,6 @@
 <template>
   <div>
-    <b-button variant="outline-primary" v-b-modal.modal-share>Share it!</b-button>
+    <b-button variant="outline-primary" v-b-modal.modal-share>Share it</b-button>
 
     <b-modal ok-only id="modal-share" title="Send this link to your friends!">
       <b-col align-h="center" class="my-2"><i>{{ modalLink }}</i></b-col>

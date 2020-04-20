@@ -20,10 +20,10 @@
             <h4><b>{{ rank + 1 }}</b></h4> score: {{ choice["elo"] }}
           </b-col>
           <b-col cols='8' md='6' lg='4'>
-            <b-button v-if="choice['type'] == 1" :pressed="true" variant="outline-primary">
-              <b-img thumbnail :src="choice['bytestream']"></b-img>
-            </b-button>
-            <b-button v-else :pressed="true" variant="outline-primary">{{ choice['bytestream'] }}</b-button>
+            <div class="choice-result" v-if="choice['type'] == 1">
+              <b-img class="choice-img" thumbnail :src="choice['bytestream']"></b-img>
+            </div>
+            <div class="choice-result" variant="outline-primary" v-else>{{ choice['bytestream'] }}</div>
           </b-col>
         </b-row>
       </transition-group>

@@ -24,11 +24,11 @@
     <hr v-if="lastOpinion.length > 0" />
     <!-- Display the 2 possible choices according to their type. 1 is image, 0 is other. -->
     <b-row class="mt-5" align-v="center" align-h="center">
-      <b-col col sm="5" lg="4" xl="3">
+      <b-col class="mb-4" cols="10" md="5" lg="4">
         <transition appear name="slide-left">
           <div v-if="choiceLoaded" class="col align-middle">
             <b-button  v-if="choices['c1']['type'] == 1" variant="outline-primary" v-on:click="chooseWinner(0)">
-              <b-img thumbnail :src="choices['c1']['bytestream']"></b-img>
+              <b-img class="choice-img" thumbnail :src="choices['c1']['bytestream']"></b-img>
             </b-button>
             <b-button v-else variant="outline-primary" v-on:click="chooseWinner(0)" >
               {{ choices['c1']['bytestream'] }}
@@ -37,14 +37,14 @@
         </transition>
       </b-col>
       <transition name="fade-taunt">
-        <b-col cols="auto">
+        <b-col class="mb-4" cols="12" md="2">
           <h1 v-if="choiceLoaded"><b>VS</b></h1>
           <div v-if="!choiceLoaded" class="spinner-border text-primary" role="status">
             <span class="sr-only">Loading...</span>
           </div>
         </b-col>
       </transition>
-      <b-col col sm="5" lg="4" xl="3">
+      <b-col class="mb-4" cols="10" md="5" lg="4">
         <transition appear name="slide-right">
           <div v-if="choiceLoaded" class="col align-middle">
             <b-button  v-if="choices['c2']['type'] == 1" variant="outline-primary" v-on:click="chooseWinner(1)">
