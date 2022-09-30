@@ -11,7 +11,7 @@ COPY ./frontend /web
 RUN yarn && yarn build
 
 # Java jar builder
-FROM golang:1.12.0-alpine3.9
+FROM golang:1.19.1-alpine3.16
 
 RUN apk update && \
     apk upgrade && \

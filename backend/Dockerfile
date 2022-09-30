@@ -1,6 +1,6 @@
 # We specify the base image we need for our
 # go application
-FROM golang:1.12.0-alpine3.9
+FROM golang:1.19.1-alpine3.16
 
 RUN apk update && \
     apk upgrade && \
